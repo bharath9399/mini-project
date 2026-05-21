@@ -88,7 +88,7 @@ body {
     background: rgba(255, 255, 255, 0.1);
     padding: 8px;
     border-radius: var(--radius-sm);
-    display: flex;
+    display: none; /* Hide on desktop by default */
     align-items: center;
     justify-content: center;
 }
@@ -1112,4 +1112,151 @@ body {
 }
 .nav-item.subj-custom:hover {
     background: #f3f4f6;
+}
+
+/* --- PREMIUM RESPONSIVE / MOBILE STYLING --- */
+@media (max-width: 1024px) {
+    /* Header adjustments */
+    .header {
+        padding: 0 15px;
+        height: 70px;
+    }
+    .header-left .user-info h2 {
+        font-size: 1rem;
+    }
+    .header-left .user-info p {
+        font-size: 0.7rem;
+    }
+    .header-center {
+        display: none; /* Hide middle logo/branding on mobile to preserve whitespace */
+    }
+    .header-right {
+        gap: 15px;
+    }
+    
+    .header-left .hamburger {
+        display: flex !important; /* Show hamburger only on mobile/tablet viewports */
+    }
+    
+    /* Main Content Layout */
+    .main-content {
+        flex-direction: column;
+        padding: 15px;
+        gap: 15px;
+        height: calc(100vh - 70px);
+        overflow-y: auto;
+    }
+    
+    /* Sidebar Left -> Elegant Slide-out Drawer Panel */
+    .sidebar-left {
+        position: fixed;
+        left: -300px;
+        top: 0;
+        bottom: 0;
+        width: 280px;
+        background: var(--bg-card);
+        z-index: 1000;
+        padding: 20px;
+        box-shadow: 5px 0 25px rgba(0, 0, 0, 0.15);
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow-y: auto;
+    }
+    .sidebar-left.active {
+        left: 0;
+    }
+    
+    /* Sidebar Overlay Backdrop with gorgeous frosted glass blur */
+    .sidebar-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        z-index: 999;
+        display: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    .sidebar-overlay.active {
+        display: block;
+        opacity: 1;
+    }
+    
+    /* Center Content Full-Width Scaling */
+    .center-content {
+        width: 100%;
+        overflow-y: visible;
+        padding-right: 0;
+    }
+    
+    /* Right Sidebar Full-Width Flow */
+    .sidebar-right {
+        width: 100%;
+        overflow-y: visible;
+        padding-right: 0;
+        margin-top: 10px;
+    }
+    
+    /* Weekly goals progress card adjustments */
+    .tracker-card {
+        flex-direction: column;
+        gap: 20px;
+        align-items: stretch;
+    }
+    .tracker-left {
+        min-width: 100%;
+    }
+    .tracker-right {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Responsive Modals */
+    .modal-content {
+        width: 92%;
+        max-width: 400px;
+        padding: 20px;
+    }
+    
+    /* Chat Discussion Modal Scale */
+    .discussion-modal-content {
+        width: 95%;
+        height: 92vh;
+        max-height: 850px;
+    }
+    
+    /* Mobile Chat Header Alignment */
+    .chat-header {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 12px 15px;
+    }
+    .chat-profiles {
+        justify-content: flex-start;
+        gap: 12px;
+        width: auto;
+        flex-grow: 1;
+    }
+    .vs-badge {
+        display: none; /* Hide VS badge to save landscape real estate */
+    }
+    #chatConnectionStatus {
+        margin-left: 0;
+        padding: 2px 8px;
+    }
+    
+    .chat-messages {
+        padding: 15px;
+    }
+    .chat-message {
+        max-width: 85%;
+    }
+    
+    .chat-input-area {
+        padding: 10px 15px;
+    }
+    .chat-input-area input {
+        padding: 10px 15px;
+        font-size: 0.85rem;
+    }
 }

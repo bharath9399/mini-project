@@ -428,20 +428,20 @@
                     <h3 class="sidebar-group-title">Students Online</h3>
                     <div class="students-list">
                         {% for peer in peers %}
-                        <div class="student-online-item {% if forloop.counter > 4 %}hidden-student{% endif %}" 
+                        <div class="student-online-item" 
                              data-username="{{ peer.user.username }}"
                              data-subjects="{% for sel in peer.subject_selections.all %}{{ sel.subject.name }}{% if not forloop.last %},{% endif %}{% endfor %}"
-                             data-subject-levels="{% for sel in peer.subject_selections.all %}{{ sel.subject.name.lower }}:{{ sel.get_level_display }}{% if not forloop.last %},{% endif %}{% endfor %}"
+                             data-subject-levels="{% for sel in peer.subject_selections.all %}{{ peer.subject.name.lower }}:{{ sel.get_level_display }}{% if not forloop.last %},{% endif %}{% endfor %}"
                              {% with first_sel=peer.subject_selections.first %}
                              data-default-subject="{% if first_sel %}{{ first_sel.subject.name }}{% else %}General{% endif %}"
                              data-default-level="{% if first_sel %}{{ first_sel.get_level_display }}{% else %}Beginner{% endif %}"
                              {% endwith %}
-                             style="{% if forloop.counter > 4 %}display: none;{% else %}display: flex;{% endif %} align-items: center; justify-content: space-between; padding: 10px; width: 100%;">
+                             style="display: flex; align-items: center; justify-content: space-between; padding: 10px; width: 100%;">
                             <div class="so-info" style="display: flex; align-items: center; gap: 10px;">
                                 <a href="{% url 'profile' username=peer.user.username %}" style="text-decoration: none; display: flex; align-items: center; gap: 10px; color: inherit; width: 100%;">
-                                    <img src="https://ui-avatars.com/api/?name={{ peer.user.first_name }}+{{ peer.user.last_name }}&background=random" class="so-avatar" alt="{{ peer.user.first_name }}">
+                                    <img src="https://ui-avatars.com/api/?name={% if peer.user.first_name or peer.user.last_name %}{{ peer.user.first_name }}+{{ peer.user.last_name }}{% else %}{{ peer.user.username }}{% endif %}&background=random" class="so-avatar" alt="{% if peer.user.first_name %}{{ peer.user.first_name }}{% else %}{{ peer.user.username }}{% endif %}">
                                     <div class="so-details">
-                                        <h4 style="font-size: 0.85rem; font-weight: 600; color: var(--text-main); margin: 0;">{{ peer.user.first_name }} {{ peer.user.last_name }}</h4>
+                                        <h4 style="font-size: 0.85rem; font-weight: 600; color: var(--text-main); margin: 0;">{% if peer.user.first_name or peer.user.last_name %}{{ peer.user.first_name }} {{ peer.user.last_name }}{% else %}{{ peer.user.username }}{% endif %}</h4>
                                         {% with sel=peer.subject_selections.first %}
                                         {% if sel %}
                                             <p style="margin: 2px 0 0 0; font-size: 0.75rem; color: var(--text-muted);" class="so-subject">{{ sel.subject.name }}</p>
@@ -462,7 +462,6 @@
                         </div>
                         {% endfor %}
                     </div>
-                    <a href="#" class="link-btn" id="viewAllBtn">View All Online Students &rarr;</a>
                 </div>
             </aside>
 
@@ -684,20 +683,20 @@
                         <div class="conversation-item" 
                              data-room-id="{{ chat.room_id }}"
                              data-username="{{ chat.partner.username }}"
-                             data-partner-name="{{ chat.partner.first_name }} {{ chat.partner.last_name }}"
+                             data-partner-name="{% if chat.partner.first_name or chat.partner.last_name %}{{ chat.partner.first_name }} {{ chat.partner.last_name }}{% else %}{{ chat.partner.username }}{% endif %}"
                              data-subject="{{ chat.subject }}"
                              data-level="{{ chat.level }}"
-                             data-avatar-url="https://ui-avatars.com/api/?name={{ chat.partner.first_name }}+{{ chat.partner.last_name }}&background=6366f1&color=fff"
-                             onclick="openChatModal('{{ chat.partner.first_name }} {{ chat.partner.last_name }}', '{{ chat.subject }}', '{{ chat.level }}', 'https://ui-avatars.com/api/?name={{ chat.partner.first_name }}+{{ chat.partner.last_name }}&background=6366f1&color=fff', '{{ chat.partner.username }}', '{{ chat.room_id }}')">
+                             data-avatar-url="https://ui-avatars.com/api/?name={% if chat.partner.first_name or chat.partner.last_name %}{{ chat.partner.first_name }}+{{ chat.partner.last_name }}{% else %}{{ chat.partner.username }}{% endif %}&background=6366f1&color=fff"
+                             onclick="openChatModal('{% if chat.partner.first_name or chat.partner.last_name %}{{ chat.partner.first_name }} {{ chat.partner.last_name }}{% else %}{{ chat.partner.username }}{% endif %}', '{{ chat.subject }}', '{{ chat.level }}', 'https://ui-avatars.com/api/?name={% if chat.partner.first_name or chat.partner.last_name %}{{ chat.partner.first_name }}+{{ chat.partner.last_name }}{% else %}{{ chat.partner.username }}{% endif %}&background=6366f1&color=fff', '{{ chat.partner.username }}', '{{ chat.room_id }}')">
                             
                             <div class="conversation-avatar-container">
-                                <img src="https://ui-avatars.com/api/?name={{ chat.partner.first_name }}+{{ chat.partner.last_name }}&background=6366f1&color=fff" class="conversation-avatar" alt="{{ chat.partner.first_name }}">
+                                <img src="https://ui-avatars.com/api/?name={% if chat.partner.first_name or chat.partner.last_name %}{{ chat.partner.first_name }}+{{ chat.partner.last_name }}{% else %}{{ chat.partner.username }}{% endif %}&background=6366f1&color=fff" class="conversation-avatar" alt="{% if chat.partner.first_name %}{{ chat.partner.first_name }}{% else %}{{ chat.partner.username }}{% endif %}">
                                 <div class="conversation-status-dot {% if chat.partner.profile.is_online %}online{% endif %}" data-username="{{ chat.partner.username }}"></div>
                             </div>
                             
                             <div class="conversation-details">
                                 <div class="conversation-header">
-                                    <h4 class="conversation-name">{{ chat.partner.first_name }} {{ chat.partner.last_name }}</h4>
+                                    <h4 class="conversation-name">{% if chat.partner.first_name or chat.partner.last_name %}{{ chat.partner.first_name }} {{ chat.partner.last_name }}{% else %}{{ chat.partner.username }}{% endif %}</h4>
                                     <span class="conversation-time">{{ chat.last_message.timestamp|date:"P"|default:"" }}</span>
                                 </div>
                                 <h5 class="conversation-subject">{{ chat.subject }} &bull; {{ chat.level }}</h5>
@@ -738,9 +737,9 @@
                              data-default-level="{% if first_sel %}{{ first_sel.get_level_display }}{% else %}Beginner{% endif %}"
                              {% endwith %}>
                             <a href="{% url 'profile' username=partner.user.username %}" class="partner-info" style="text-decoration: none; color: inherit; transition: opacity 0.2s; display: flex; align-items: center; gap: 15px; width: 100%;">
-                                <img src="https://ui-avatars.com/api/?name={{ partner.user.first_name }}+{{ partner.user.last_name }}&background=random" class="partner-avatar" alt="{{ partner.user.first_name }}">
+                                <img src="https://ui-avatars.com/api/?name={% if partner.user.first_name or partner.user.last_name %}{{ partner.user.first_name }}+{{ partner.user.last_name }}{% else %}{{ partner.user.username }}{% endif %}&background=random" class="partner-avatar" alt="{% if partner.user.first_name %}{{ partner.user.first_name }}{% else %}{{ partner.user.username }}{% endif %}">
                                 <div class="partner-details">
-                                    <h4 style="margin: 0; color: var(--text-main); font-weight: 700;">{{ partner.user.first_name }} {{ partner.user.last_name }}</h4>
+                                    <h4 style="margin: 0; color: var(--text-main); font-weight: 700;">{% if partner.user.first_name or partner.user.last_name %}{{ partner.user.first_name }} {{ partner.user.last_name }}{% else %}{{ partner.user.username }}{% endif %}</h4>
                                     {% with sel=partner.subject_selections.first %}
                                     {% if sel %}
                                         <p style="margin: 2px 0 0 0;" class="partner-subject">{{ sel.subject.name }}</p>
@@ -863,6 +862,12 @@
                             <h4 id="chatPartnerName">Partner Name</h4>
                             <p id="chatPartnerSubject">Subject</p>
                         </div>
+                    </div>
+                    
+                    <!-- Live Connection Status Badge -->
+                    <div id="chatConnectionStatus" style="font-size: 0.7rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; display: inline-flex; align-items: center; gap: 6px; background: rgba(245, 158, 11, 0.15); color: #f59e0b; margin-left: 10px; transition: all 0.3s ease;">
+                        <span class="status-dot" style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #f59e0b; animation: blink 2s infinite ease-in-out;"></span>
+                        <span class="status-text">Connecting...</span>
                     </div>
                 </div>
                 <button id="clearChatBtn" style="background: none; border: none; cursor: pointer; color: var(--text-muted); margin-right: 15px; display: flex; align-items: center; justify-content: center;" title="Clear Chat history">
@@ -1110,60 +1115,34 @@
             });
 
             // Filter Students Online
-            const viewAllBtn = document.getElementById('viewAllBtn');
             document.querySelectorAll('.student-online-item').forEach(student => {
                 const subjectTextEl = student.querySelector('.so-subject');
                 const levelTextEl = student.querySelector('.so-level');
+
+                // Online students are always displayed to all users irrespective of selected subject filters
+                student.style.display = 'flex';
 
                 if (!selectedSubjectClass) {
                     // Restore default subject and level text
                     if (subjectTextEl) subjectTextEl.innerText = student.getAttribute('data-default-subject');
                     if (levelTextEl) levelTextEl.innerText = student.getAttribute('data-default-level');
-                    
-                    // Show or hide based on view all state and hidden-student class
-                    const isHidden = student.classList.contains('hidden-student');
-                    const isViewAllActive = viewAllBtn && viewAllBtn.innerText.includes('Show Less');
-                    
-                    if (isHidden && !isViewAllActive) {
-                        student.style.display = 'none';
-                    } else {
-                        student.style.display = 'flex';
-                    }
                 } else {
                     const subjectsAttr = student.getAttribute('data-subjects');
                     const isCorrectSubject = subjectsAttr && subjectsAttr.toLowerCase().split(',').includes(selectedSubjectName.toLowerCase());
                     
                     if (isCorrectSubject) {
-                        // Dynamically update subject text and level text display
+                        // Dynamically update subject text and level text display to match the active filter
                         const studentLvl = getPartnerLevelForSubject(student, selectedSubjectName) || 'Beginner';
                         if (subjectTextEl) subjectTextEl.innerText = selectedSubjectName;
                         if (levelTextEl) levelTextEl.innerText = studentLvl;
-
-                        if (selectedLevel) {
-                            // Filter by mentoring target level strictly (match exactly)
-                            const targetLvl = getTargetLevelForFilter(selectedLevel);
-                            if (studentLvl.toLowerCase() === targetLvl.toLowerCase()) {
-                                student.style.display = 'flex';
-                            } else {
-                                student.style.display = 'none';
-                            }
-                        } else {
-                            student.style.display = 'flex';
-                        }
                     } else {
-                        student.style.display = 'none';
+                        // Restore default subject and level text if they do not study the selected subject
+                        if (subjectTextEl) subjectTextEl.innerText = student.getAttribute('data-default-subject');
+                        if (levelTextEl) levelTextEl.innerText = student.getAttribute('data-default-level');
                     }
                 }
             });
 
-            // Toggle viewAllBtn visibility when a subject is active
-            if (viewAllBtn) {
-                if (selectedSubjectClass) {
-                    viewAllBtn.style.display = 'none';
-                } else {
-                    viewAllBtn.style.display = 'block';
-                }
-            }
 
             // Filter Study Progress
             document.querySelectorAll('.sp-item').forEach(sp => {
@@ -1238,6 +1217,40 @@
 
         // On page load, find the active nav-item (if any) and trigger its filtering
         window.addEventListener('DOMContentLoaded', () => {
+            // Hamburger Menu Slide-out Drawer logic for Mobile / Tablet
+            const hamburger = document.querySelector('.header-left .hamburger');
+            const sidebarLeft = document.querySelector('.sidebar-left');
+            
+            if (hamburger && sidebarLeft) {
+                // Create overlay backdrop element dynamically
+                let overlay = document.querySelector('.sidebar-overlay');
+                if (!overlay) {
+                    overlay = document.createElement('div');
+                    overlay.className = 'sidebar-overlay';
+                    document.body.appendChild(overlay);
+                }
+                
+                hamburger.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    sidebarLeft.classList.toggle('active');
+                    overlay.classList.toggle('active');
+                });
+                
+                overlay.addEventListener('click', () => {
+                    sidebarLeft.classList.remove('active');
+                    overlay.classList.remove('active');
+                });
+
+                // Also close drawer when clicking a navigation item, subject or connect btn inside it on mobile
+                const dismissElements = sidebarLeft.querySelectorAll('.nav-item, .student-online-item, .btn-outline');
+                dismissElements.forEach(item => {
+                    item.addEventListener('click', () => {
+                        sidebarLeft.classList.remove('active');
+                        overlay.classList.remove('active');
+                    });
+                });
+            }
+
             const activeNavItem = document.querySelector('.nav-item.active');
             if (activeNavItem && activeNavItem.id !== 'addSubjectBtn') {
                 currentSubjectClass = Array.from(activeNavItem.classList).find(cls => cls !== 'nav-item' && cls !== 'active');
@@ -1440,6 +1453,34 @@
         });
         let chatSocket = null;
         let currentRoomId = null;
+        let pendingMessages = [];
+
+        function updateChatConnectionStatus(state) {
+            const badge = document.getElementById('chatConnectionStatus');
+            if (!badge) return;
+            const dot = badge.querySelector('.status-dot');
+            const text = badge.querySelector('.status-text');
+            
+            if (state === 'connected') {
+                badge.style.background = 'rgba(16, 185, 129, 0.15)';
+                badge.style.color = '#10b981';
+                dot.style.background = '#10b981';
+                dot.style.animation = 'blink 2s infinite ease-in-out';
+                text.innerText = 'Connected';
+            } else if (state === 'connecting' || state === 'reconnecting') {
+                badge.style.background = 'rgba(245, 158, 11, 0.15)';
+                badge.style.color = '#f59e0b';
+                dot.style.background = '#f59e0b';
+                dot.style.animation = 'blink 2s infinite ease-in-out';
+                text.innerText = state === 'reconnecting' ? 'Reconnecting...' : 'Connecting...';
+            } else if (state === 'disconnected') {
+                badge.style.background = 'rgba(239, 68, 68, 0.15)';
+                badge.style.color = '#ef4444';
+                dot.style.background = '#ef4444';
+                dot.style.animation = 'none';
+                text.innerText = 'Disconnected';
+            }
+        }
 
         async function openChatModal(name, subject, level, imgUrl, partnerUsername = null, roomId = null) {
             chatPartnerName.innerText = name;
@@ -1460,18 +1501,51 @@
             }
 
             chatMessagesArea.innerHTML = '<div style="text-align:center; color:var(--text-muted); font-size: 0.85rem; padding: 20px;">Connecting...</div>';
+            updateChatConnectionStatus('connecting');
             
             // Function to connect the WebSocket to a room ID
-            function connectToRoom(rid, partnerName) {
-                chatMessagesArea.innerHTML = `<div style="text-align:center; color:var(--primary); font-size: 0.85rem; padding: 20px;">Connected to ${partnerName}!</div>`;
+            window.connectToRoom = function connectToRoom(rid, partnerName) {
+                // Only show connecting status if we don't have messages rendered yet
+                if (chatMessagesArea.querySelectorAll('.chat-message').length === 0) {
+                    chatMessagesArea.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size: 0.85rem; padding: 20px;">Connecting to ${partnerName}...</div>`;
+                }
+                
                 if (chatSocket) {
-                    chatSocket.close();
+                    try {
+                        chatSocket.close();
+                    } catch(e) {}
                 }
                 
                 currentRoomId = rid;
                 
                 const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
                 chatSocket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/${rid}/`);
+                
+                chatSocket.onopen = function(e) {
+                    console.log("Chat socket connected to room " + rid);
+                    updateChatConnectionStatus('connected');
+
+                    // Automatically transmit any pending queued messages
+                    if (pendingMessages.length > 0) {
+                        console.log(`Transmitting ${pendingMessages.length} queued pending messages...`);
+                        pendingMessages.forEach(msg => {
+                            try {
+                                chatSocket.send(JSON.stringify({
+                                    'message': msg
+                                }));
+                            } catch(err) {
+                                console.error("Error sending queued message:", err);
+                            }
+                        });
+                        pendingMessages = [];
+                    }
+
+                    // Only show Connected to... if there are no messages rendered yet
+                    if (chatMessagesArea.querySelectorAll('.chat-message').length === 0) {
+                        chatMessagesArea.innerHTML = `<div style="text-align:center; color:var(--status-completed); font-size: 0.85rem; padding: 10px 20px 20px 20px;"><i data-lucide="check-circle" style="width: 14px; vertical-align: middle; margin-right: 4px;"></i>Connected to ${partnerName}!</div>`;
+                        lucide.createIcons();
+                    }
+                };
                 
                 chatSocket.onmessage = function(e) {
                     const data = JSON.parse(e.data);
@@ -1488,6 +1562,23 @@
                         chatMessagesArea.innerHTML = '<div style="text-align:center; color:var(--text-muted); font-size: 0.85rem; padding: 20px;">Chat history cleared by a participant.</div>';
                         return;
                     }
+
+                    // Prevent duplicates (crucial for background reconnection self-healing)
+                    if (data.id) {
+                        const duplicateMsg = chatMessagesArea.querySelector(`[data-message-id="${data.id}"]`);
+                        if (duplicateMsg) {
+                            console.log(`Duplicate message skipped: ${data.id}`);
+                            return;
+                        }
+                    }
+
+                    // Remove connection placeholders if they are present
+                    const placeholders = chatMessagesArea.querySelectorAll('div[style*="text-align:center"]');
+                    placeholders.forEach(placeholder => {
+                        if (placeholder.innerText.includes("Connected to") || placeholder.innerText.includes("Connecting to")) {
+                            placeholder.remove();
+                        }
+                    });
 
                     const msgDiv = document.createElement('div');
                     if (data.id) {
@@ -1512,13 +1603,22 @@
                         </button>`;
                     }
 
+                    // Format message timestamp beautifully
+                    let timeStr = 'Just now';
+                    if (data.timestamp) {
+                        try {
+                            const date = new Date(data.timestamp);
+                            timeStr = date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                        } catch(e) {}
+                    }
+
                     msgDiv.innerHTML = `
                         <div class="msg-bubble">
                             ${userLabel}
                             ${messageContent}
                         </div>
                         <div style="display:flex; justify-content:${isMine ? 'flex-end' : 'flex-start'}; align-items:center; gap:8px; width:100%;">
-                            <span class="msg-time">Just now</span>
+                            <span class="msg-time">${timeStr}</span>
                             ${deleteOptionHtml}
                         </div>
                     `;
@@ -1526,8 +1626,25 @@
                     lucide.createIcons();
                     chatMessagesArea.scrollTop = chatMessagesArea.scrollHeight;
                 };
+                
                 chatSocket.onclose = function(e) {
                     console.warn('Chat socket closed');
+                    // Automatically attempt to reconnect if the discussion modal is still open and this is the active room!
+                    if (discussionModal.style.display === 'flex' && currentRoomId === rid) {
+                        console.log("Chat room disconnected. Attempting to reconnect in 2 seconds...");
+                        updateChatConnectionStatus('reconnecting');
+                        setTimeout(() => {
+                            if (discussionModal.style.display === 'flex' && currentRoomId === rid) {
+                                if (typeof window.connectToRoom === 'function') {
+                                    window.connectToRoom(rid, partnerName);
+                                } else {
+                                    connectToRoom(rid, partnerName);
+                                }
+                            }
+                        }, 2000);
+                    } else {
+                        updateChatConnectionStatus('disconnected');
+                    }
                 };
             }
 
@@ -1554,11 +1671,52 @@
                 });
                 const data = await response.json();
                 if (data.room_id) {
-                    connectToRoom(data.room_id, data.partner);
-                    // Refresh dashboard after a slight delay to list the new chat in recent active conversations
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1000);
+                    connectToRoom(data.room_id, name);
+                    
+                    // Prepend new conversation item dynamically to the sidebar list if not present
+                    const sidebarList = document.getElementById('sidebarConversationList');
+                    if (sidebarList) {
+                        const placeholder = document.getElementById('noActiveChatsPlaceholder');
+                        if (placeholder) {
+                            placeholder.remove();
+                        }
+                        
+                        let convItem = document.querySelector(`.conversation-item[data-room-id="${data.room_id}"]`);
+                        if (!convItem) {
+                            convItem = document.createElement('div');
+                            convItem.className = 'conversation-item';
+                            convItem.setAttribute('data-room-id', data.room_id);
+                            convItem.setAttribute('data-username', partnerUsername || data.partner);
+                            convItem.setAttribute('data-partner-name', name);
+                            convItem.setAttribute('data-subject', subject);
+                            convItem.setAttribute('data-level', level);
+                            convItem.setAttribute('data-avatar-url', imgUrl);
+                            
+                            convItem.onclick = function() {
+                                openChatModal(name, subject, level, imgUrl, partnerUsername || data.partner, data.room_id);
+                            };
+
+                            convItem.innerHTML = `
+                                <div class="conversation-avatar-container">
+                                    <img src="${imgUrl}" class="conversation-avatar" alt="${name}">
+                                    <div class="conversation-status-dot online" data-username="${partnerUsername || data.partner}"></div>
+                                </div>
+                                <div class="conversation-details">
+                                    <div class="conversation-header">
+                                        <h4 class="conversation-name">${name}</h4>
+                                        <span class="conversation-time">Just now</span>
+                                    </div>
+                                    <h5 class="conversation-subject">${subject} &bull; ${level}</h5>
+                                    <p class="conversation-preview" id="preview-${data.room_id}">
+                                        No messages yet
+                                    </p>
+                                </div>
+                                <div class="conversation-badges" id="badge-container-${data.room_id}">
+                                </div>
+                            `;
+                            sidebarList.prepend(convItem);
+                        }
+                    }
                 } else if (data.error) {
                     chatMessagesArea.innerHTML = `<div style="text-align:center; color:#ef4444; font-size: 0.85rem; padding: 20px;">${data.error}</div>`;
                 }
@@ -1767,7 +1925,22 @@
                     chatInput.value = '';
                 }
             } else {
-                alert("You are not connected to a chat room.");
+                // Queue the message in memory silently
+                if (!isHtml) {
+                    pendingMessages.push(text);
+                    chatInput.value = '';
+                }
+                
+                // Shift visual badge to reconnecting
+                updateChatConnectionStatus('reconnecting');
+                
+                // Try to reconnect immediately in the background
+                if (currentRoomId) {
+                    console.log("Chat socket not open. Queueing message and attempting background reconnect...");
+                    if (typeof window.connectToRoom === 'function') {
+                        window.connectToRoom(currentRoomId, chatPartnerName.innerText);
+                    }
+                }
             }
         }
 
@@ -2235,8 +2408,16 @@
         }
 
         // --- GLOBAL NOTIFICATION & REAL-TIME PRESENCE SOCKET LOGIC ---
+        let notificationSocket = null;
         const notificationWsScheme = window.location.protocol === "https:" ? "wss" : "ws";
-        const notificationSocket = new WebSocket(`${notificationWsScheme}://${window.location.host}/ws/notifications/`);
+
+        function connectNotificationSocket() {
+            if (notificationSocket) {
+                try {
+                    notificationSocket.close();
+                } catch(e) {}
+            }
+            notificationSocket = new WebSocket(`${notificationWsScheme}://${window.location.host}/ws/notifications/`);
 
         function playNotificationChime() {
             try {
@@ -2284,24 +2465,93 @@
             console.log("Global Notification received:", data);
 
             if (data.type === 'status_update') {
-                // Update online status dot in Students Online sidebar list
-                document.querySelectorAll(`.student-online-item[data-username="${data.username}"]`).forEach(student => {
-                    const dot = student.querySelector('.dot');
-                    if (dot) {
-                        dot.style.background = data.is_online ? 'var(--status-completed)' : '#9ca3af';
+                if (data.is_online) {
+                    const existingItems = document.querySelectorAll(`.student-online-item[data-username="${data.username}"]`);
+                    if (existingItems.length === 0) {
+                        const studentList = document.querySelector('.students-list');
+                        if (studentList) {
+                            // Check for empty placeholder and remove it
+                            const placeholder = Array.from(studentList.children).find(child => child.innerText && child.innerText.includes("No other students online right now"));
+                            if (placeholder) {
+                                placeholder.remove();
+                            }
+
+                            const student = document.createElement('div');
+                            student.className = 'student-online-item';
+                            student.setAttribute('data-username', data.username);
+                            student.setAttribute('data-subjects', data.subjects || '');
+                            student.setAttribute('data-subject-levels', data.subject_levels || '');
+                            student.setAttribute('data-default-subject', data.default_subject || 'General');
+                            student.setAttribute('data-default-level', data.default_level || 'Beginner');
+                            // Bypasses subject class selectors to ensure they slide/fade in immediately at flex and opacity 1
+                            student.style.cssText = "display: flex; align-items: center; justify-content: space-between; padding: 10px; width: 100%; opacity: 1; transition: all 0.5s ease;";
+                            
+                            const displayName = `${data.first_name || data.username} ${data.last_name || ''}`.trim();
+                            const defaultSubj = data.default_subject || 'General';
+                            const defaultLvl = data.default_level || 'Beginner';
+                            
+                            student.innerHTML = `
+                                <div class="so-info" style="display: flex; align-items: center; gap: 10px;">
+                                    <a href="/profile/${data.username}/" style="text-decoration: none; display: flex; align-items: center; gap: 10px; color: inherit; width: 100%;">
+                                        <img src="https://ui-avatars.com/api/?name=${data.first_name || data.username}+${data.last_name || ''}&background=random" class="so-avatar" alt="${data.first_name || data.username}">
+                                        <div class="so-details">
+                                            <h4 style="font-size: 0.85rem; font-weight: 600; color: var(--text-main); margin: 0;">${displayName}</h4>
+                                            <p style="margin: 2px 0 0 0; font-size: 0.75rem; color: var(--text-muted);" class="so-subject">${defaultSubj}</p>
+                                            <p style="margin: 2px 0 0 0; display: flex; align-items: center;"><span class="dot" style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 4px; background: var(--status-completed);"></span> <span style="font-size: 0.65rem; color: var(--text-muted);" class="so-level">${defaultLvl}</span></p>
+                                        </div>
+                                    </a>
+                                </div>
+                                <button class="btn-outline" style="flex-shrink: 0; min-width: 75px;">Connect</button>
+                            `;
+                            
+                            studentList.prepend(student);
+                            
+                            // Bind click handler to the newly created button
+                            const connectBtn = student.querySelector('.btn-outline');
+                            if (connectBtn) {
+                                connectBtn.addEventListener('click', function(e) {
+                                    e.preventDefault();
+                                    const name = student.querySelector('.so-details h4').innerText;
+                                    const subject = student.querySelector('.so-subject').innerText;
+                                    const levelRaw = student.querySelector('.so-level').innerText;
+                                    const imgUrl = student.querySelector('.so-avatar').src;
+                                    const partnerUsername = student.getAttribute('data-username');
+                                    
+                                    if (this.innerText === 'Connect') {
+                                        this.innerText = 'Connected';
+                                        this.style.background = 'var(--status-completed)';
+                                        this.style.color = 'white';
+                                        this.style.borderColor = 'var(--status-completed)';
+                                    }
+                                    
+                                    openChatModal(name, subject, levelRaw, imgUrl, partnerUsername);
+                                });
+                            }
+                        }
+                    } else {
+                        existingItems.forEach(student => {
+                            const dot = student.querySelector('.dot');
+                            if (dot) {
+                                dot.style.background = 'var(--status-completed)';
+                            }
+                            student.style.display = 'flex';
+                            student.style.opacity = '1';
+                        });
                     }
-                    // Prevent offline users from lingering in the list
-                    if (!data.is_online) {
+                } else {
+                    document.querySelectorAll(`.student-online-item[data-username="${data.username}"]`).forEach(student => {
+                        const dot = student.querySelector('.dot');
+                        if (dot) {
+                            dot.style.background = '#9ca3af';
+                        }
+                        // Prevent offline users from lingering in the list
                         student.style.transition = 'all 0.5s ease';
                         student.style.opacity = '0';
                         setTimeout(() => {
                             student.style.display = 'none';
                         }, 500);
-                    } else {
-                        student.style.display = 'flex';
-                        student.style.opacity = '1';
-                    }
-                });
+                    });
+                }
 
                 // Update online status ring in Recent Conversations sidebar
                 document.querySelectorAll(`.conversation-status-dot[data-username="${data.username}"]`).forEach(dot => {
@@ -2468,9 +2718,12 @@
         notificationSocket.onclose = function(e) {
             console.log("Global notifications socket closed, attempting reconnect in 5s...");
             setTimeout(() => {
-                window.location.reload();
+                connectNotificationSocket();
             }, 5000);
         };
+        }
+
+        connectNotificationSocket();
     </script>
     <form method="POST" id="deleteSubjectForm" style="display: none;">
         {% csrf_token %}

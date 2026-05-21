@@ -97,7 +97,7 @@ def dashboard_view(request):
     tasks = Task.objects.filter(user=request.user)
     
     # Get all online users (excluding current user) strictly
-    peers = Profile.objects.exclude(user=request.user).filter(is_online=True)[:6]
+    peers = Profile.objects.exclude(user=request.user).filter(is_online=True)[:20]
     
     # Get smart recommended study partners:
     # 1. Get current user's chosen subjects

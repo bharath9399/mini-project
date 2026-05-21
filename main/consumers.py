@@ -70,6 +70,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             # Save message to database
             msg_id = await self.save_message(message)
+            timestamp_str = await self.get_message_timestamp(msg_id)
 
             # Send message to room group
             await self.channel_layer.group_send(
@@ -78,7 +79,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'type': 'chat_message',
                     'id': msg_id,
                     'message': message,
-                    'username': username
+                    'username': username,
+                    'timestamp': timestamp_str
                 }
             )
 
@@ -102,12 +104,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
         message = event['message']
         username = event['username']
         msg_id = event.get('id')
+        timestamp = event.get('timestamp', '')
 
         # Send message to WebSocket
         await self.send(text_data=json.dumps({
             'id': msg_id,
             'message': message,
-            'username': username
+            'username': username,
+            'timestamp': timestamp
         }))
 
     async def chat_message_deleted(self, event):
@@ -155,7 +159,20 @@ class ChatConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def get_past_messages(self):
         room = MatchRoom.objects.get(id=self.room_id)
-        return [{'id': m.id, 'text': m.text, 'username': m.sender.username} for m in room.messages.order_by('timestamp')[:50]]
+        return [{
+            'id': m.id,
+            'text': m.text,
+            'username': m.sender.username,
+            'timestamp': m.timestamp.isoformat() if m.timestamp else ''
+        } for m in room.messages.order_by('timestamp')[:50]]
+
+    @database_sync_to_async
+    def get_message_timestamp(self, msg_id):
+        try:
+            return ChatMessage.objects.get(id=msg_id).timestamp.isoformat()
+        except Exception:
+            from django.utils import timezone
+            return timezone.now().isoformat()
 
     @database_sync_to_async
     def check_participant(self):
@@ -213,12 +230,19 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         # If this is the user's first active tab/connection, set online status and broadcast
         if len(NotificationConsumer.active_users[self.username]) == 1:
             await self.update_online_status(True)
+            user_data = await self.get_user_details()
             await self.channel_layer.group_send(
                 self.global_group,
                 {
                     'type': 'status_update',
                     'username': self.username,
-                    'is_online': True
+                    'is_online': True,
+                    'first_name': user_data['first_name'],
+                    'last_name': user_data['last_name'],
+                    'default_subject': user_data['default_subject'],
+                    'default_level': user_data['default_level'],
+                    'subjects': user_data['subjects'],
+                    'subject_levels': user_data['subject_levels']
                 }
             )
 
@@ -266,8 +290,53 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'type': 'status_update',
             'username': event['username'],
-            'is_online': event['is_online']
+            'is_online': event['is_online'],
+            'first_name': event.get('first_name'),
+            'last_name': event.get('last_name'),
+            'default_subject': event.get('default_subject'),
+            'default_level': event.get('default_level'),
+            'subjects': event.get('subjects'),
+            'subject_levels': event.get('subject_levels')
         }))
+
+    @database_sync_to_async
+    def get_user_details(self):
+        try:
+            user = self.user
+            first_name = user.first_name or user.username.capitalize()
+            last_name = user.last_name or ""
+            
+            # Retrieve subject selections
+            profile = user.profile
+            selections = profile.subject_selections.all()
+            subj_list = [sel.subject.name for sel in selections]
+            subj_str = ",".join(subj_list)
+            
+            lvl_list = [f"{sel.subject.name.lower()}:{sel.get_level_display()}" for sel in selections]
+            lvl_str = ",".join(lvl_list)
+            
+            first_sel = selections.first()
+            default_subject = first_sel.subject.name if first_sel else "General"
+            default_level = first_sel.get_level_display() if first_sel else "Beginner"
+            
+            return {
+                'first_name': first_name,
+                'last_name': last_name,
+                'default_subject': default_subject,
+                'default_level': default_level,
+                'subjects': subj_str,
+                'subject_levels': lvl_str
+            }
+        except Exception as e:
+            print(f"Error fetching user details in socket: {e}")
+            return {
+                'first_name': self.username.capitalize(),
+                'last_name': '',
+                'default_subject': 'General',
+                'default_level': 'Beginner',
+                'subjects': '',
+                'subject_levels': ''
+            }
 
     @database_sync_to_async
     def update_online_status(self, is_online):
