@@ -56,21 +56,85 @@ def dashboard_view(request):
             Task.objects.create(user=request.user, title=title)
             return redirect('dashboard')
 
+    if request.method == 'POST' and 'add_subject' in request.POST:
+        subject_name = request.POST.get('subject_name')
+        subject_level = request.POST.get('subject_level', 'intermediate').strip().lower()
+        if subject_name:
+            subject_name = subject_name.strip()
+            subject_obj, _ = Subject.objects.get_or_create(name=subject_name)
+            SubjectSelection.objects.update_or_create(
+                student=profile,
+                subject=subject_obj,
+                defaults={'level': subject_level}
+            )
+            
+            # ALSO assign this subject to other registered profiles so they are active on it!
+            other_profiles = Profile.objects.exclude(user=request.user)
+            if other_profiles.exists():
+                import random
+                profiles_to_assign = list(other_profiles)
+                random.shuffle(profiles_to_assign)
+                assigned_count = min(len(profiles_to_assign), 3) # assign to up to 3 real users
+                levels = ['beginner', 'intermediate', 'pro']
+                for i in range(assigned_count):
+                    p = profiles_to_assign[i]
+                    p_level = random.choice(levels)
+                    SubjectSelection.objects.get_or_create(
+                        student=p,
+                        subject=subject_obj,
+                        defaults={'level': p_level}
+                    )
+            return redirect('dashboard')
+
+    if request.method == 'POST' and 'delete_subject' in request.POST:
+        subject_id = request.POST.get('subject_id')
+        if subject_id:
+            SubjectSelection.objects.filter(student=profile, id=subject_id).delete()
+            return redirect('dashboard')
+
+
     subjects = Subject.objects.all()
     tasks = Task.objects.filter(user=request.user)
     
-    # Get all online users as potential peers for now
-    peers = Profile.objects.filter(is_online=True).exclude(user=request.user).distinct()[:6]
+    # Get all online users (excluding current user) strictly
+    peers = Profile.objects.exclude(user=request.user).filter(is_online=True)[:6]
+    
+    # Get smart recommended study partners:
+    # 1. Get current user's chosen subjects
+    my_subjects = SubjectSelection.objects.filter(student=profile).values_list('subject', flat=True)
+    
+    # 2. Get profiles of other students studying the same subjects, strictly online
+    same_subject_profiles = Profile.objects.exclude(user=request.user).filter(
+        is_online=True,
+        subject_selections__subject__in=my_subjects
+    ).distinct()
+    
+    # 3. Get all other online profiles (fallback)
+    other_profiles = Profile.objects.exclude(user=request.user).filter(is_online=True).exclude(
+        id__in=same_subject_profiles.values_list('id', flat=True)
+    )
+    
+    # Combine the lists using itertools.chain to maintain priority ordering
+    from itertools import chain
+    recommended_partners_qs = list(chain(same_subject_profiles, other_profiles))[:12]
     
     context = {
         'subjects': subjects,
         'tasks': tasks,
         'peers': peers,
-        'profile': profile
+        'profile': profile,
+        'recommended_partners': recommended_partners_qs,
     }
     return render(request, 'main/dashboard.html', context)
 
 def logout_view(request):
+    if request.user.is_authenticated:
+        try:
+            profile = request.user.profile
+            profile.is_online = False
+            profile.save()
+        except Profile.DoesNotExist:
+            pass
     logout(request)
     return redirect('login')
 
@@ -80,6 +144,7 @@ def find_partner_view(request):
         try:
             data = json.loads(request.body)
             subject_name = data.get('subject')
+            partner_username = data.get('partner_username')
             
             # Extract the pure subject name if it's passed with level (e.g. 'Mathematics • Intermediate')
             if '•' in subject_name:
@@ -98,45 +163,60 @@ def find_partner_view(request):
                 defaults={'level': level}
             )
             
-            # 1. Check if the user is already part of an active MatchRoom for this subject
-            existing_room = MatchRoom.objects.filter(
-                is_active=True, subject=subject_obj
-            ).filter(
-                Q(student1=request.user) | Q(student2=request.user)
-            ).first()
-            
-            if existing_room:
-                partner_user = existing_room.student2 if existing_room.student1 == request.user else existing_room.student1
-                print(f"[MATCHMAKING] {request.user.username} joined existing room {existing_room.id} with {partner_user.username}")
-                return JsonResponse({'room_id': existing_room.id, 'partner': partner_user.username})
-                
-            # 2. If no room exists, find online users
-            online_users = User.objects.filter(profile__is_online=True).exclude(id=request.user.id)
-            
-            # 3. Match Exact Subject and Level
-            exact_matches = online_users.filter(
-                profile__subject_selections__subject__name__icontains=subject_name,
-                profile__subject_selections__level=level
-            )
-            
             partner = None
-            if exact_matches.exists():
-                import random
-                partner = random.choice(list(exact_matches))
-            else:
-                # 4. Match Nearby Level (same subject, different level)
-                nearby_matches = online_users.filter(
-                    profile__subject_selections__subject__name__icontains=subject_name
+            if partner_username:
+                # Direct match request to a specific user
+                partner_user = User.objects.filter(username=partner_username).first()
+                if partner_user and partner_user != request.user:
+                    partner = partner_user
+                    # Also make sure the partner has a profile selection for this subject
+                    # to keep database and UI selection states consistent
+                    SubjectSelection.objects.get_or_create(
+                        student=partner.profile,
+                        subject=subject_obj,
+                        defaults={'level': level}
+                    )
+            
+            # If no specific partner was requested or found:
+            if not partner:
+                # 1. Check if the user is already part of an active MatchRoom for this subject
+                existing_room = MatchRoom.objects.filter(
+                    is_active=True, subject=subject_obj
+                ).filter(
+                    Q(student1=request.user) | Q(student2=request.user)
+                ).first()
+                
+                if existing_room:
+                    partner_user = existing_room.student2 if existing_room.student1 == request.user else existing_room.student1
+                    print(f"[MATCHMAKING] {request.user.username} joined existing room {existing_room.id} with {partner_user.username}")
+                    return JsonResponse({'room_id': existing_room.id, 'partner': partner_user.username})
+                    
+                # 2. If no room exists, find online users
+                online_users = User.objects.filter(profile__is_online=True).exclude(id=request.user.id)
+                
+                # 3. Match Exact Subject and Level
+                exact_matches = online_users.filter(
+                    profile__subject_selections__subject__name__icontains=subject_name,
+                    profile__subject_selections__level=level
                 )
-                if nearby_matches.exists():
+                
+                if exact_matches.exists():
                     import random
-                    partner = random.choice(list(nearby_matches))
+                    partner = random.choice(list(exact_matches))
                 else:
-                    # 5. Fallback: Just match ANY online user (useful for local testing)
-                    any_online = online_users.all()
-                    if any_online.exists():
+                    # 4. Match Nearby Level (same subject, different level)
+                    nearby_matches = online_users.filter(
+                        profile__subject_selections__subject__name__icontains=subject_name
+                    )
+                    if nearby_matches.exists():
                         import random
-                        partner = random.choice(list(any_online))
+                        partner = random.choice(list(nearby_matches))
+                    else:
+                        # 5. Fallback: Just match ANY online user (useful for local testing)
+                        any_online = online_users.all()
+                        if any_online.exists():
+                            import random
+                            partner = random.choice(list(any_online))
             
             # 6. If absolutely nobody is online, return an error
             if not partner:
@@ -152,10 +232,6 @@ def find_partner_view(request):
             
             if partner_room:
                 print(f"[MATCHMAKING] {request.user.username} is joining partner's existing room {partner_room.id}")
-                # We can just update student2 if it was empty, but since we created it with student2=partner originally,
-                # if A created Room(A, B), partner_room has student1=A, student2=B.
-                # B is now searching, picks A. partner_room is found!
-                # We simply return partner_room.id so B connects to it!
                 return JsonResponse({'room_id': partner_room.id, 'partner': partner.username})
                 
             room = MatchRoom.objects.create(
@@ -196,3 +272,30 @@ def upload_file_view(request):
             return JsonResponse({'error': str(e)}, status=400)
             
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+@login_required
+def profile_view(request, username):
+    from django.shortcuts import get_object_or_404
+    target_user = get_object_or_404(User, username=username)
+    target_profile, _ = Profile.objects.get_or_create(user=target_user)
+    
+    # Get user's subjects
+    subject_selections = target_profile.subject_selections.all()
+    
+    # Get user's tasks
+    tasks = Task.objects.filter(user=target_user)
+    completed_tasks = tasks.filter(completed=True).count()
+    total_tasks = tasks.count()
+    task_progress = int((completed_tasks / total_tasks * 100)) if total_tasks > 0 else 0
+    
+    context = {
+        'target_user': target_user,
+        'target_profile': target_profile,
+        'subject_selections': subject_selections,
+        'tasks': tasks,
+        'task_progress': task_progress,
+        'total_tasks': total_tasks,
+        'completed_tasks': completed_tasks,
+    }
+    return render(request, 'main/profile.html', context)

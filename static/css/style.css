@@ -1101,3 +1101,15 @@ body {
 .nav-item:hover .delete-subject-btn { display: block !important; }
 
 .pill-beg { background: #dcfce7; color: #16a34a; }
+
+/* Custom Dynamic Subjects styling */
+.nav-item.subj-custom .nav-icon {
+    background: #e0e7ff;
+    color: #4f46e5;
+}
+.nav-item.active.subj-custom {
+    background: #ede9fe;
+}
+.nav-item.subj-custom:hover {
+    background: #f3f4f6;
+}

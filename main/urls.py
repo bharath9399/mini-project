@@ -9,4 +9,5 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('api/match/', views.find_partner_view, name='find_partner'),
     path('api/chat/upload/', views.upload_file_view, name='upload_file'),
+    path('profile/<str:username>/', views.profile_view, name='profile'),
 ]

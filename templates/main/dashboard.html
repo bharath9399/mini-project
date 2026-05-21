@@ -116,48 +116,41 @@
                 <div>
                     <h3 class="sidebar-group-title">Subjects</h3>
                     <nav class="nav-list">
-                        <a href="#" class="nav-item active math">
-                            <div class="nav-icon"><i data-lucide="calculator"></i></div>
-                            Mathematics
-                            <i data-lucide="trash-2" class="delete-subject-btn" style="width: 16px; color: #ef4444; margin-left: auto; z-index: 2;" title="Delete"></i>
+                        {% for selection in profile.subject_selections.all %}
+                        {% with name_lower=selection.subject.name.lower %}
+                        <a href="#" class="nav-item {% if forloop.first %}active{% endif %} {% if 'math' in name_lower %}math{% elif 'phy' in name_lower %}phy{% elif 'chem' in name_lower %}chem{% elif 'bio' in name_lower %}bio{% elif 'eco' in name_lower %}eco{% elif 'zoo' in name_lower %}zoo{% else %}subj-custom{% endif %}" data-subject-name="{{ selection.subject.name }}">
+                            <div class="nav-icon">
+                                <i data-lucide="{% if 'math' in name_lower %}calculator{% elif 'phy' in name_lower %}atom{% elif 'chem' in name_lower %}flask-conical{% elif 'bio' in name_lower %}dna{% elif 'eco' in name_lower %}line-chart{% elif 'zoo' in name_lower %}bug{% elif 'java' in name_lower or 'python' in name_lower or 'c++' in name_lower or 'code' in name_lower %}code{% elif 'data' in name_lower or 'sql' in name_lower %}database{% elif 'web' in name_lower or 'html' in name_lower %}globe{% elif 'art' in name_lower or 'design' in name_lower %}palette{% elif 'history' in name_lower or 'time' in name_lower %}hourglass{% elif 'music' in name_lower %}music{% else %}book-open{% endif %}"></i>
+                            </div>
+                            {{ selection.subject.name }}
+                            <i data-lucide="trash-2" class="delete-subject-btn" data-selection-id="{{ selection.id }}" style="width: 16px; color: #ef4444; margin-left: auto; z-index: 2;" title="Delete"></i>
                         </a>
-                        <a href="#" class="nav-item phy">
-                            <div class="nav-icon"><i data-lucide="atom"></i></div>
-                            Physics
-                            <i data-lucide="trash-2" class="delete-subject-btn" style="width: 16px; color: #ef4444; margin-left: auto; z-index: 2;" title="Delete"></i>
-                        </a>
-                        <a href="#" class="nav-item chem">
-                            <div class="nav-icon"><i data-lucide="flask-conical"></i></div>
-                            Chemistry
-                            <i data-lucide="trash-2" class="delete-subject-btn" style="width: 16px; color: #ef4444; margin-left: auto; z-index: 2;" title="Delete"></i>
-                        </a>
-                        <a href="#" class="nav-item bio">
-                            <div class="nav-icon"><i data-lucide="dna"></i></div>
-                            Biology
-                            <i data-lucide="trash-2" class="delete-subject-btn" style="width: 16px; color: #ef4444; margin-left: auto; z-index: 2;" title="Delete"></i>
-                        </a>
-                        <a href="#" class="nav-item eco">
-                            <div class="nav-icon"><i data-lucide="line-chart"></i></div>
-                            Economics
-                            <i data-lucide="trash-2" class="delete-subject-btn" style="width: 16px; color: #ef4444; margin-left: auto; z-index: 2;" title="Delete"></i>
-                        </a>
-                        <a href="#" class="nav-item zoo">
-                            <div class="nav-icon"><i data-lucide="bug"></i></div>
-                            Zoology
-                            <i data-lucide="trash-2" class="delete-subject-btn" style="width: 16px; color: #ef4444; margin-left: auto; z-index: 2;" title="Delete"></i>
-                        </a>
+                        {% endwith %}
+                        {% empty %}
+                        <div style="padding: 10px; text-align: center; color: var(--text-muted); font-size: 0.8rem; border: 1px dashed var(--border); border-radius: 12px; margin-bottom: 5px;">
+                            No subjects added yet.
+                        </div>
+                        {% endfor %}
                         <a href="#" id="addSubjectBtn" style="display: flex; align-items: center; justify-content: center; color: var(--primary); font-weight: 600; border: 1px dashed var(--primary); background: transparent; padding: 10px; margin-top: 5px; border-radius: 12px; text-decoration: none;">
                             <i data-lucide="plus" style="width: 18px; margin-right: 5px;"></i> Add Subject
                         </a>
-                        <div id="addSubjectForm" style="display: none; flex-direction: column; gap: 8px; margin-top: 5px;">
-                            <input type="text" id="newSubjectInput" placeholder="Subject Name..." style="padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 0.85rem; outline: none;">
+                        <form method="POST" id="addSubjectForm" style="display: none; flex-direction: column; gap: 8px; margin-top: 5px;">
+                            {% csrf_token %}
+                            <input type="hidden" name="add_subject" value="1">
+                            <input type="text" id="newSubjectInput" name="subject_name" placeholder="Subject Name..." style="padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 0.85rem; outline: none;" required>
+                            <select name="subject_level" style="padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 0.85rem; outline: none; background: white; color: var(--text-main); font-family: inherit; font-weight: 500;" required>
+                                <option value="beginner">Beginner</option>
+                                <option value="intermediate" selected>Intermediate</option>
+                                <option value="pro">Pro</option>
+                            </select>
                             <div style="display: flex; gap: 5px;">
-                                <button id="saveSubjectBtn" style="flex: 1; padding: 6px; background: var(--primary); color: white; border: none; border-radius: 6px; font-size: 0.8rem; font-weight: 500; cursor: pointer;">Add</button>
-                                <button id="cancelSubjectBtn" style="flex: 1; padding: 6px; background: #f3f4f6; color: var(--text-main); border: none; border-radius: 6px; font-size: 0.8rem; font-weight: 500; cursor: pointer;">Cancel</button>
+                                <button type="submit" id="saveSubjectBtn" style="flex: 1; padding: 6px; background: var(--primary); color: white; border: none; border-radius: 6px; font-size: 0.8rem; font-weight: 500; cursor: pointer;">Add</button>
+                                <button type="button" id="cancelSubjectBtn" style="flex: 1; padding: 6px; background: #f3f4f6; color: var(--text-main); border: none; border-radius: 6px; font-size: 0.8rem; font-weight: 500; cursor: pointer;">Cancel</button>
                             </div>
-                        </div>
+                        </form>
                     </nav>
                 </div>
+
 
                 <div>
                     <h3 class="sidebar-group-title">Weekly Goals</h3>
@@ -177,72 +170,40 @@
                 <div>
                     <h3 class="sidebar-group-title">Students Online</h3>
                     <div class="students-list">
-                        <div class="student-online-item">
-                            <div class="so-info">
-                                <img src="https://ui-avatars.com/api/?name=Ravi+Kumar&background=random" class="so-avatar" alt="Ravi">
-                                <div class="so-details">
-                                    <h4>Ravi Kumar</h4>
-                                    <p>Mathematics</p>
-                                    <p style="margin-top: 2px;"><span class="dot dot-int"></span> <span style="font-size: 0.65rem;">Intermediate</span></p>
-                                </div>
+                        {% for peer in peers %}
+                        <div class="student-online-item {% if forloop.counter > 4 %}hidden-student{% endif %}" 
+                             data-username="{{ peer.user.username }}"
+                             data-subjects="{% for sel in peer.subject_selections.all %}{{ sel.subject.name }}{% if not forloop.last %},{% endif %}{% endfor %}"
+                             data-subject-levels="{% for sel in peer.subject_selections.all %}{{ sel.subject.name.lower }}:{{ sel.get_level_display }}{% if not forloop.last %},{% endif %}{% endfor %}"
+                             {% with first_sel=peer.subject_selections.first %}
+                             data-default-subject="{% if first_sel %}{{ first_sel.subject.name }}{% else %}General{% endif %}"
+                             data-default-level="{% if first_sel %}{{ first_sel.get_level_display }}{% else %}Beginner{% endif %}"
+                             {% endwith %}
+                             style="{% if forloop.counter > 4 %}display: none;{% else %}display: flex;{% endif %} align-items: center; justify-content: space-between; padding: 10px; width: 100%;">
+                            <div class="so-info" style="display: flex; align-items: center; gap: 10px;">
+                                <a href="{% url 'profile' username=peer.user.username %}" style="text-decoration: none; display: flex; align-items: center; gap: 10px; color: inherit; width: 100%;">
+                                    <img src="https://ui-avatars.com/api/?name={{ peer.user.first_name }}+{{ peer.user.last_name }}&background=random" class="so-avatar" alt="{{ peer.user.first_name }}">
+                                    <div class="so-details">
+                                        <h4 style="font-size: 0.85rem; font-weight: 600; color: var(--text-main); margin: 0;">{{ peer.user.first_name }} {{ peer.user.last_name }}</h4>
+                                        {% with sel=peer.subject_selections.first %}
+                                        {% if sel %}
+                                            <p style="margin: 2px 0 0 0; font-size: 0.75rem; color: var(--text-muted);" class="so-subject">{{ sel.subject.name }}</p>
+                                            <p style="margin: 2px 0 0 0; display: flex; align-items: center;"><span class="dot" style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 4px; background: {% if peer.is_online %}var(--status-completed){% else %}#9ca3af{% endif %};"></span> <span style="font-size: 0.65rem; color: var(--text-muted);" class="so-level">{{ sel.get_level_display }}</span></p>
+                                        {% else %}
+                                            <p style="margin: 2px 0 0 0; font-size: 0.75rem; color: var(--text-muted);" class="so-subject">General</p>
+                                            <p style="margin: 2px 0 0 0; display: flex; align-items: center;"><span class="dot" style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 4px; background: {% if peer.is_online %}var(--status-completed){% else %}#9ca3af{% endif %};"></span> <span style="font-size: 0.65rem; color: var(--text-muted);" class="so-level">Beginner</span></p>
+                                        {% endif %}
+                                        {% endwith %}
+                                    </div>
+                                </a>
                             </div>
-                            <button class="btn-outline">Connect</button>
+                            <button class="btn-outline" style="flex-shrink: 0; min-width: 75px;">Connect</button>
                         </div>
-                        <div class="student-online-item">
-                            <div class="so-info">
-                                <img src="https://ui-avatars.com/api/?name=Keerthi+N&background=random" class="so-avatar" alt="Keerthi">
-                                <div class="so-details">
-                                    <h4>Keerthi N.</h4>
-                                    <p>Physics</p>
-                                    <p style="margin-top: 2px;"><span class="dot dot-pro"></span> <span style="font-size: 0.65rem;">Pro</span></p>
-                                </div>
-                            </div>
-                            <button class="btn-outline">Connect</button>
+                        {% empty %}
+                        <div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 0.85rem; width: 100%;">
+                            No other students online right now.
                         </div>
-                        <div class="student-online-item">
-                            <div class="so-info">
-                                <img src="https://ui-avatars.com/api/?name=Shalini+P&background=random" class="so-avatar" alt="Shalini">
-                                <div class="so-details">
-                                    <h4>Shalini P.</h4>
-                                    <p>Chemistry</p>
-                                    <p style="margin-top: 2px;"><span class="dot dot-int"></span> <span style="font-size: 0.65rem;">Intermediate</span></p>
-                                </div>
-                            </div>
-                            <button class="btn-outline">Connect</button>
-                        </div>
-                        <div class="student-online-item">
-                            <div class="so-info">
-                                <img src="https://ui-avatars.com/api/?name=Arjun+R&background=random" class="so-avatar" alt="Arjun">
-                                <div class="so-details">
-                                    <h4>Arjun R.</h4>
-                                    <p>Biology</p>
-                                    <p style="margin-top: 2px;"><span class="dot dot-beg"></span> <span style="font-size: 0.65rem;">Beginner</span></p>
-                                </div>
-                            </div>
-                            <button class="btn-outline">Connect</button>
-                        </div>
-                        <div class="student-online-item hidden-student" style="display: none;">
-                            <div class="so-info">
-                                <img src="https://ui-avatars.com/api/?name=Neha+S&background=random" class="so-avatar" alt="Neha">
-                                <div class="so-details">
-                                    <h4>Neha S.</h4>
-                                    <p>Economics</p>
-                                    <p style="margin-top: 2px;"><span class="dot dot-pro"></span> <span style="font-size: 0.65rem;">Pro</span></p>
-                                </div>
-                            </div>
-                            <button class="btn-outline">Connect</button>
-                        </div>
-                        <div class="student-online-item hidden-student" style="display: none;">
-                            <div class="so-info">
-                                <img src="https://ui-avatars.com/api/?name=Vikas+M&background=random" class="so-avatar" alt="Vikas">
-                                <div class="so-details">
-                                    <h4>Vikas M.</h4>
-                                    <p>Zoology</p>
-                                    <p style="margin-top: 2px;"><span class="dot dot-int"></span> <span style="font-size: 0.65rem;">Intermediate</span></p>
-                                </div>
-                            </div>
-                            <button class="btn-outline">Connect</button>
-                        </div>
+                        {% endfor %}
                     </div>
                     <a href="#" class="link-btn" id="viewAllBtn">View All Online Students &rarr;</a>
                 </div>
@@ -461,269 +422,40 @@
                 <div class="card">
                     <h2 class="card-title"><i data-lucide="users"></i> Recommended Study Partners</h2>
                     <div class="partner-list">
-                        <!-- Mathematics -->
-                        <div class="partner-item">
-                            <div class="partner-info">
-                                <img src="https://ui-avatars.com/api/?name=Raju+Das&background=3b82f6&color=fff" class="partner-avatar" alt="Raju">
+                        {% for partner in recommended_partners %}
+                        <div class="partner-item" 
+                             data-username="{{ partner.user.username }}" 
+                             data-subjects="{% for sel in partner.subject_selections.all %}{{ sel.subject.name }}{% if not forloop.last %},{% endif %}{% endfor %}"
+                             data-subject-levels="{% for sel in partner.subject_selections.all %}{{ sel.subject.name.lower }}:{{ sel.get_level_display }}{% if not forloop.last %},{% endif %}{% endfor %}"
+                             {% with first_sel=partner.subject_selections.first %}
+                             data-default-subject="{% if first_sel %}{{ first_sel.subject.name }}{% else %}General{% endif %}"
+                             data-default-level="{% if first_sel %}{{ first_sel.get_level_display }}{% else %}Beginner{% endif %}"
+                             {% endwith %}>
+                            <a href="{% url 'profile' username=partner.user.username %}" class="partner-info" style="text-decoration: none; color: inherit; transition: opacity 0.2s; display: flex; align-items: center; gap: 15px; width: 100%;">
+                                <img src="https://ui-avatars.com/api/?name={{ partner.user.first_name }}+{{ partner.user.last_name }}&background=random" class="partner-avatar" alt="{{ partner.user.first_name }}">
                                 <div class="partner-details">
-                                    <h4>Raju Das</h4>
-                                    <p>Mathematics</p>
-                                    <span class="level-pill pill-beg">Beginner</span>
+                                    <h4 style="margin: 0; color: var(--text-main); font-weight: 700;">{{ partner.user.first_name }} {{ partner.user.last_name }}</h4>
+                                    {% with sel=partner.subject_selections.first %}
+                                    {% if sel %}
+                                        <p style="margin: 2px 0 0 0;" class="partner-subject">{{ sel.subject.name }}</p>
+                                        <span class="level-pill {% if sel.level == 'pro' %}pill-pro{% elif sel.level == 'intermediate' %}pill-int{% else %}pill-beg{% endif %}">{{ sel.get_level_display }}</span>
+                                    {% else %}
+                                        <p style="margin: 2px 0 0 0;" class="partner-subject">General</p>
+                                        <span class="level-pill pill-beg">Beginner</span>
+                                    {% endif %}
+                                    {% endwith %}
                                 </div>
-                            </div>
+                            </a>
                             <div class="partner-actions">
                                 <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
                                 <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
                             </div>
                         </div>
-                        <div class="partner-item">
-                            <div class="partner-info">
-                                <img src="https://ui-avatars.com/api/?name=Anil+Kumar&background=1d4ed8&color=fff" class="partner-avatar" alt="Anil">
-                                <div class="partner-details">
-                                    <h4>Anil Kumar</h4>
-                                    <p>Mathematics</p>
-                                    <span class="level-pill pill-int">Intermediate</span>
-                                </div>
-                            </div>
-                            <div class="partner-actions">
-                                <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
-                                <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
-                            </div>
+                        {% empty %}
+                        <div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 0.85rem; width: 100%;">
+                            No study partners online right now.
                         </div>
-                        <div class="partner-item">
-                            <div class="partner-info">
-                                <img src="https://ui-avatars.com/api/?name=Vikram+Reddy&background=4338ca&color=fff" class="partner-avatar" alt="Vikram">
-                                <div class="partner-details">
-                                    <h4>Vikram Reddy</h4>
-                                    <p>Mathematics</p>
-                                    <span class="level-pill pill-pro">Pro</span>
-                                </div>
-                            </div>
-                            <div class="partner-actions">
-                                <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
-                                <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
-                            </div>
-                        </div>
-                        
-                        <!-- Physics -->
-                        <div class="partner-item">
-                            <div class="partner-info">
-                                <img src="https://ui-avatars.com/api/?name=Maya+Menon&background=059669&color=fff" class="partner-avatar" alt="Maya">
-                                <div class="partner-details">
-                                    <h4>Maya Menon</h4>
-                                    <p>Physics</p>
-                                    <span class="level-pill pill-beg">Beginner</span>
-                                </div>
-                            </div>
-                            <div class="partner-actions">
-                                <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
-                                <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
-                            </div>
-                        </div>
-                        <div class="partner-item">
-                            <div class="partner-info">
-                                <img src="https://ui-avatars.com/api/?name=Suresh+Babu&background=573b30&color=fff" class="partner-avatar" alt="Suresh">
-                                <div class="partner-details">
-                                    <h4>Suresh Babu</h4>
-                                    <p>Physics</p>
-                                    <span class="level-pill pill-int">Intermediate</span>
-                                </div>
-                            </div>
-                            <div class="partner-actions">
-                                <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
-                                <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
-                            </div>
-                        </div>
-                        <div class="partner-item">
-                            <div class="partner-info">
-                                <img src="https://ui-avatars.com/api/?name=Priya+Sharma&background=172061&color=fff" class="partner-avatar" alt="Priya">
-                                <div class="partner-details">
-                                    <h4>Priya Sharma</h4>
-                                    <p>Physics</p>
-                                    <span class="level-pill pill-pro">Pro</span>
-                                </div>
-                            </div>
-                            <div class="partner-actions">
-                                <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
-                                <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
-                            </div>
-                        </div>
-
-                        <!-- Chemistry -->
-                        <div class="partner-item">
-                            <div class="partner-info">
-                                <img src="https://ui-avatars.com/api/?name=Kiran+Bose&background=ea580c&color=fff" class="partner-avatar" alt="Kiran">
-                                <div class="partner-details">
-                                    <h4>Kiran Bose</h4>
-                                    <p>Chemistry</p>
-                                    <span class="level-pill pill-beg">Beginner</span>
-                                </div>
-                            </div>
-                            <div class="partner-actions">
-                                <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
-                                <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
-                            </div>
-                        </div>
-                        <div class="partner-item">
-                            <div class="partner-info">
-                                <img src="https://ui-avatars.com/api/?name=Neha+Patil&background=c90300&color=fff" class="partner-avatar" alt="Neha">
-                                <div class="partner-details">
-                                    <h4>Neha Patil</h4>
-                                    <p>Chemistry</p>
-                                    <span class="level-pill pill-int">Intermediate</span>
-                                </div>
-                            </div>
-                            <div class="partner-actions">
-                                <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
-                                <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
-                            </div>
-                        </div>
-                        <div class="partner-item">
-                            <div class="partner-info">
-                                <img src="https://ui-avatars.com/api/?name=Rahul+Verma&background=dcf1fb&color=000" class="partner-avatar" alt="Rahul">
-                                <div class="partner-details">
-                                    <h4>Rahul Verma</h4>
-                                    <p>Chemistry</p>
-                                    <span class="level-pill pill-pro">Pro</span>
-                                </div>
-                            </div>
-                            <div class="partner-actions">
-                                <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
-                                <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
-                            </div>
-                        </div>
-
-                        <!-- Biology -->
-                        <div class="partner-item">
-                            <div class="partner-info">
-                                <img src="https://ui-avatars.com/api/?name=Tina+Roy&background=e11d48&color=fff" class="partner-avatar" alt="Tina">
-                                <div class="partner-details">
-                                    <h4>Tina Roy</h4>
-                                    <p>Biology</p>
-                                    <span class="level-pill pill-beg">Beginner</span>
-                                </div>
-                            </div>
-                            <div class="partner-actions">
-                                <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
-                                <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
-                            </div>
-                        </div>
-                        <div class="partner-item">
-                            <div class="partner-info">
-                                <img src="https://ui-avatars.com/api/?name=Kavya+Nair&background=random" class="partner-avatar" alt="Kavya">
-                                <div class="partner-details">
-                                    <h4>Kavya Nair</h4>
-                                    <p>Biology</p>
-                                    <span class="level-pill pill-int">Intermediate</span>
-                                </div>
-                            </div>
-                            <div class="partner-actions">
-                                <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
-                                <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
-                            </div>
-                        </div>
-                        <div class="partner-item">
-                            <div class="partner-info">
-                                <img src="https://ui-avatars.com/api/?name=Amit+Singh&background=random" class="partner-avatar" alt="Amit">
-                                <div class="partner-details">
-                                    <h4>Amit Singh</h4>
-                                    <p>Biology</p>
-                                    <span class="level-pill pill-pro">Pro</span>
-                                </div>
-                            </div>
-                            <div class="partner-actions">
-                                <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
-                                <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
-                            </div>
-                        </div>
-
-                        <!-- Economics -->
-                        <div class="partner-item">
-                            <div class="partner-info">
-                                <img src="https://ui-avatars.com/api/?name=Dev+Patel&background=0284c7&color=fff" class="partner-avatar" alt="Dev">
-                                <div class="partner-details">
-                                    <h4>Dev Patel</h4>
-                                    <p>Economics</p>
-                                    <span class="level-pill pill-beg">Beginner</span>
-                                </div>
-                            </div>
-                            <div class="partner-actions">
-                                <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
-                                <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
-                            </div>
-                        </div>
-                        <div class="partner-item">
-                            <div class="partner-info">
-                                <img src="https://ui-avatars.com/api/?name=Sneha+Rao&background=random" class="partner-avatar" alt="Sneha">
-                                <div class="partner-details">
-                                    <h4>Sneha Rao</h4>
-                                    <p>Economics</p>
-                                    <span class="level-pill pill-int">Intermediate</span>
-                                </div>
-                            </div>
-                            <div class="partner-actions">
-                                <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
-                                <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
-                            </div>
-                        </div>
-                        <div class="partner-item">
-                            <div class="partner-info">
-                                <img src="https://ui-avatars.com/api/?name=Karan+Joshi&background=random" class="partner-avatar" alt="Karan">
-                                <div class="partner-details">
-                                    <h4>Karan Joshi</h4>
-                                    <p>Economics</p>
-                                    <span class="level-pill pill-pro">Pro</span>
-                                </div>
-                            </div>
-                            <div class="partner-actions">
-                                <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
-                                <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
-                            </div>
-                        </div>
-
-                        <!-- Zoology -->
-                        <div class="partner-item">
-                            <div class="partner-info">
-                                <img src="https://ui-avatars.com/api/?name=Sonia+Gupta&background=9333ea&color=fff" class="partner-avatar" alt="Sonia">
-                                <div class="partner-details">
-                                    <h4>Sonia Gupta</h4>
-                                    <p>Zoology</p>
-                                    <span class="level-pill pill-beg">Beginner</span>
-                                </div>
-                            </div>
-                            <div class="partner-actions">
-                                <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
-                                <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
-                            </div>
-                        </div>
-                        <div class="partner-item">
-                            <div class="partner-info">
-                                <img src="https://ui-avatars.com/api/?name=Divya+Menon&background=random" class="partner-avatar" alt="Divya">
-                                <div class="partner-details">
-                                    <h4>Divya Menon</h4>
-                                    <p>Zoology</p>
-                                    <span class="level-pill pill-int">Intermediate</span>
-                                </div>
-                            </div>
-                            <div class="partner-actions">
-                                <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
-                                <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
-                            </div>
-                        </div>
-                        <div class="partner-item">
-                            <div class="partner-info">
-                                <img src="https://ui-avatars.com/api/?name=Arun+Das&background=random" class="partner-avatar" alt="Arun">
-                                <div class="partner-details">
-                                    <h4>Arun Das</h4>
-                                    <p>Zoology</p>
-                                    <span class="level-pill pill-pro">Pro</span>
-                                </div>
-                            </div>
-                            <div class="partner-actions">
-                                <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
-                                <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
-                            </div>
-                        </div>
+                        {% endfor %}
                     </div>
                     <a href="#" class="link-btn">View All Partners →</a>
                 </div>
@@ -827,6 +559,9 @@
                         </div>
                     </div>
                 </div>
+                <button id="clearChatBtn" style="background: none; border: none; cursor: pointer; color: var(--text-muted); margin-right: 15px; display: flex; align-items: center; justify-content: center;" title="Clear Chat history">
+                    <i data-lucide="trash-2" style="width: 22px; color: #ef4444;"></i>
+                </button>
                 <i data-lucide="x" class="close-modal" id="closeDiscussionModal"></i>
             </div>
             
@@ -876,12 +611,11 @@
                 <div class="form-group">
                     <label for="scheduleSubject">Subject</label>
                     <select id="scheduleSubject">
-                        <option value="math">Mathematics</option>
-                        <option value="phy">Physics</option>
-                        <option value="chem">Chemistry</option>
-                        <option value="bio">Biology</option>
-                        <option value="eco">Economics</option>
-                        <option value="zoo">Zoology</option>
+                        {% for selection in profile.subject_selections.all %}
+                        {% with name_lower=selection.subject.name.lower %}
+                        <option value="{% if 'math' in name_lower %}math{% elif 'phy' in name_lower %}phy{% elif 'chem' in name_lower %}chem{% elif 'bio' in name_lower %}bio{% elif 'eco' in name_lower %}eco{% elif 'zoo' in name_lower %}zoo{% else %}subj-custom{% endif %}" data-subject-name="{{ selection.subject.name }}">{{ selection.subject.name }}</option>
+                        {% endwith %}
+                        {% endfor %}
                     </select>
                 </div>
                 <div class="form-group">
@@ -911,12 +645,11 @@
                 <div class="form-group">
                     <label for="taskSubject">Subject</label>
                     <select id="taskSubject">
-                        <option value="math">Mathematics</option>
-                        <option value="phy">Physics</option>
-                        <option value="chem">Chemistry</option>
-                        <option value="bio">Biology</option>
-                        <option value="eco">Economics</option>
-                        <option value="zoo">Zoology</option>
+                        {% for selection in profile.subject_selections.all %}
+                        {% with name_lower=selection.subject.name.lower %}
+                        <option value="{% if 'math' in name_lower %}math{% elif 'phy' in name_lower %}phy{% elif 'chem' in name_lower %}chem{% elif 'bio' in name_lower %}bio{% elif 'eco' in name_lower %}eco{% elif 'zoo' in name_lower %}zoo{% else %}subj-custom{% endif %}" data-subject-name="{{ selection.subject.name }}">{{ selection.subject.name }}</option>
+                        {% endwith %}
+                        {% endfor %}
                     </select>
                 </div>
                 <div class="form-group">
@@ -942,8 +675,6 @@
     <script>
         lucide.createIcons();
 
-        const subjects = ['math', 'phy', 'chem', 'bio', 'eco', 'zoo'];
-        
         let currentSubjectClass = null;
         let currentSubjectName = null;
 
@@ -959,6 +690,41 @@
             });
         }
 
+        function getPartnerLevelForSubject(partner, subjectName) {
+            const subjectLevelsAttr = partner.getAttribute('data-subject-levels');
+            if (subjectLevelsAttr) {
+                const pairs = subjectLevelsAttr.split(',');
+                for (let i = 0; i < pairs.length; i++) {
+                    const [subj, lvl] = pairs[i].split(':');
+                    if (subj.toLowerCase() === subjectName.toLowerCase()) {
+                        return lvl.trim();
+                    }
+                }
+            }
+            return null;
+        }
+
+        function updateLevelPillClasses(pill, level) {
+            pill.className = 'level-pill';
+            const lvlLower = level.toLowerCase();
+            if (lvlLower === 'pro') {
+                pill.classList.add('pill-pro');
+            } else if (lvlLower === 'intermediate') {
+                pill.classList.add('pill-int');
+            } else {
+                pill.classList.add('pill-beg');
+            }
+        }
+
+        function getTargetLevelForFilter(selectedLevel) {
+            if (!selectedLevel) return null;
+            const lvl = selectedLevel.toLowerCase();
+            if (lvl === 'beginner') return 'Intermediate';
+            if (lvl === 'intermediate') return 'Pro';
+            if (lvl === 'pro') return 'Beginner';
+            return selectedLevel;
+        }
+
         function applySubjectFilter(selectedSubjectClass, selectedSubjectName, selectedLevel = null) {
             // Filter Tasks
             document.querySelectorAll('.task-item').forEach(task => {
@@ -966,7 +732,9 @@
                     task.style.display = 'flex';
                 } else {
                     const tag = task.querySelector('.tag');
-                    if (tag && tag.classList.contains(selectedSubjectClass)) {
+                    const isMatch = tag && (tag.classList.contains(selectedSubjectClass) || 
+                                    tag.innerText.trim().toLowerCase() === selectedSubjectName.toLowerCase());
+                    if (isMatch) {
                         task.style.display = 'flex';
                     } else {
                         task.style.display = 'none';
@@ -980,7 +748,10 @@
                     sched.style.display = 'flex';
                 } else {
                     const icon = sched.querySelector('.sched-icon');
-                    if (icon && icon.classList.contains(selectedSubjectClass)) {
+                    const detailsH4 = sched.querySelector('.sched-details h4');
+                    const isMatch = (icon && icon.classList.contains(selectedSubjectClass)) || 
+                                    (detailsH4 && detailsH4.innerText.toLowerCase().includes(selectedSubjectName.toLowerCase()));
+                    if (isMatch) {
                         sched.style.display = 'flex';
                     } else {
                         sched.style.display = 'none';
@@ -990,21 +761,35 @@
 
             // Filter Partners
             document.querySelectorAll('.partner-item').forEach(partner => {
+                const subjectTextEl = partner.querySelector('.partner-subject');
+                const levelPillEl = partner.querySelector('.level-pill');
+
                 if (!selectedSubjectClass) {
                     partner.style.display = 'flex';
+                    // Restore default subject and level text
+                    if (subjectTextEl) subjectTextEl.innerText = partner.getAttribute('data-default-subject');
+                    if (levelPillEl) {
+                        const defaultLvl = partner.getAttribute('data-default-level');
+                        levelPillEl.innerText = defaultLvl;
+                        updateLevelPillClasses(levelPillEl, defaultLvl);
+                    }
                 } else {
-                    const pTag = partner.querySelector('.partner-details p');
-                    const isCorrectSubject = (pTag && pTag.innerText.trim() === selectedSubjectName);
+                    const subjectsAttr = partner.getAttribute('data-subjects');
+                    const isCorrectSubject = subjectsAttr && subjectsAttr.toLowerCase().split(',').includes(selectedSubjectName.toLowerCase());
                     
                     if (isCorrectSubject) {
+                        // Dynamically update subject text and level pill display
+                        const partnerLvl = getPartnerLevelForSubject(partner, selectedSubjectName) || 'Beginner';
+                        if (subjectTextEl) subjectTextEl.innerText = selectedSubjectName;
+                        if (levelPillEl) {
+                            levelPillEl.innerText = partnerLvl;
+                            updateLevelPillClasses(levelPillEl, partnerLvl);
+                        }
+
                         if (selectedLevel) {
-                            let targetLevel = selectedLevel;
-                            if (selectedLevel === "Beginner") targetLevel = "Intermediate";
-                            else if (selectedLevel === "Intermediate") targetLevel = "Pro";
-                            
-                            // Filter by level too if a level is selected
-                            const levelPill = partner.querySelector('.level-pill');
-                            if (levelPill && levelPill.innerText.trim() === targetLevel) {
+                            // Filter by mentoring target level strictly (match exactly)
+                            const targetLvl = getTargetLevelForFilter(selectedLevel);
+                            if (partnerLvl.toLowerCase() === targetLvl.toLowerCase()) {
                                 partner.style.display = 'flex';
                             } else {
                                 partner.style.display = 'none';
@@ -1018,12 +803,71 @@
                 }
             });
 
+            // Filter Students Online
+            const viewAllBtn = document.getElementById('viewAllBtn');
+            document.querySelectorAll('.student-online-item').forEach(student => {
+                const subjectTextEl = student.querySelector('.so-subject');
+                const levelTextEl = student.querySelector('.so-level');
+
+                if (!selectedSubjectClass) {
+                    // Restore default subject and level text
+                    if (subjectTextEl) subjectTextEl.innerText = student.getAttribute('data-default-subject');
+                    if (levelTextEl) levelTextEl.innerText = student.getAttribute('data-default-level');
+                    
+                    // Show or hide based on view all state and hidden-student class
+                    const isHidden = student.classList.contains('hidden-student');
+                    const isViewAllActive = viewAllBtn && viewAllBtn.innerText.includes('Show Less');
+                    
+                    if (isHidden && !isViewAllActive) {
+                        student.style.display = 'none';
+                    } else {
+                        student.style.display = 'flex';
+                    }
+                } else {
+                    const subjectsAttr = student.getAttribute('data-subjects');
+                    const isCorrectSubject = subjectsAttr && subjectsAttr.toLowerCase().split(',').includes(selectedSubjectName.toLowerCase());
+                    
+                    if (isCorrectSubject) {
+                        // Dynamically update subject text and level text display
+                        const studentLvl = getPartnerLevelForSubject(student, selectedSubjectName) || 'Beginner';
+                        if (subjectTextEl) subjectTextEl.innerText = selectedSubjectName;
+                        if (levelTextEl) levelTextEl.innerText = studentLvl;
+
+                        if (selectedLevel) {
+                            // Filter by mentoring target level strictly (match exactly)
+                            const targetLvl = getTargetLevelForFilter(selectedLevel);
+                            if (studentLvl.toLowerCase() === targetLvl.toLowerCase()) {
+                                student.style.display = 'flex';
+                            } else {
+                                student.style.display = 'none';
+                            }
+                        } else {
+                            student.style.display = 'flex';
+                        }
+                    } else {
+                        student.style.display = 'none';
+                    }
+                }
+            });
+
+            // Toggle viewAllBtn visibility when a subject is active
+            if (viewAllBtn) {
+                if (selectedSubjectClass) {
+                    viewAllBtn.style.display = 'none';
+                } else {
+                    viewAllBtn.style.display = 'block';
+                }
+            }
+
             // Filter Study Progress
             document.querySelectorAll('.sp-item').forEach(sp => {
                 if (!selectedSubjectClass) {
                     sp.style.display = 'flex';
                 } else {
-                    if (sp.classList.contains(selectedSubjectClass)) {
+                    const titleEl = sp.querySelector('.sp-title');
+                    const isMatch = sp.classList.contains(selectedSubjectClass) || 
+                                    (titleEl && titleEl.innerText.toLowerCase().includes(selectedSubjectName.toLowerCase()));
+                    if (isMatch) {
                         sp.style.display = 'flex';
                     } else {
                         sp.style.display = 'none';
@@ -1049,14 +893,11 @@
                     resetNavItems();
                     this.classList.add('active');
                     
-                    // Extract subject class
-                    currentSubjectClass = null;
-                    subjects.forEach(subj => {
-                        if (this.classList.contains(subj)) currentSubjectClass = subj;
-                    });
+                    // Extract subject class dynamically
+                    currentSubjectClass = Array.from(this.classList).find(cls => cls !== 'nav-item' && cls !== 'active');
                     
-                    // Extract clean name
-                    currentSubjectName = this.innerText.trim();
+                    // Extract clean name via data-subject-name attribute
+                    currentSubjectName = this.getAttribute('data-subject-name') || this.innerText.trim();
 
                     // Apply filter just for subject initially
                     applySubjectFilter(currentSubjectClass, currentSubjectName);
@@ -1087,6 +928,23 @@
                 // Apply filtering with the new level
                 applySubjectFilter(currentSubjectClass, currentSubjectName, level);
             });
+        });
+
+        // On page load, find the active nav-item (if any) and trigger its filtering
+        window.addEventListener('DOMContentLoaded', () => {
+            const activeNavItem = document.querySelector('.nav-item.active');
+            if (activeNavItem && activeNavItem.id !== 'addSubjectBtn') {
+                currentSubjectClass = Array.from(activeNavItem.classList).find(cls => cls !== 'nav-item' && cls !== 'active');
+                currentSubjectName = activeNavItem.getAttribute('data-subject-name') || activeNavItem.innerText.trim();
+                
+                const dropdown = document.getElementById('levelDropdown');
+                if (dropdown) {
+                    activeNavItem.after(dropdown);
+                    dropdown.style.display = 'flex';
+                }
+                
+                applySubjectFilter(currentSubjectClass, currentSubjectName);
+            }
         });
 
         // Update Tasks Completed count
@@ -1277,7 +1135,7 @@
         let chatSocket = null;
         let currentRoomId = null;
 
-        async function openChatModal(name, subject, level, imgUrl) {
+        async function openChatModal(name, subject, level, imgUrl, partnerUsername = null) {
             chatPartnerName.innerText = name;
             chatPartnerSubject.innerText = subject + ' • ' + level;
             chatPartnerImg.src = imgUrl;
@@ -1296,7 +1154,8 @@
                     },
                     body: JSON.stringify({
                         subject: subject,
-                        level: level
+                        level: level,
+                        partner_username: partnerUsername
                     })
                 });
                 const data = await response.json();
@@ -1313,27 +1172,55 @@
                     
                     chatSocket.onmessage = function(e) {
                         const data = JSON.parse(e.data);
+
+                        if (data.action === 'delete_message') {
+                            const targetMsg = chatMessagesArea.querySelector(`[data-message-id="${data.message_id}"]`);
+                            if (targetMsg) {
+                                targetMsg.remove();
+                            }
+                            return;
+                        }
+
+                        if (data.action === 'clear_chat') {
+                            chatMessagesArea.innerHTML = '<div style="text-align:center; color:var(--text-muted); font-size: 0.85rem; padding: 20px;">Chat history cleared by a participant.</div>';
+                            return;
+                        }
+
                         const msgDiv = document.createElement('div');
+                        if (data.id) {
+                            msgDiv.setAttribute('data-message-id', data.id);
+                        }
                         const isMine = data.username === '{{ request.user.username }}';
                         msgDiv.className = isMine ? 'chat-message msg-mine' : 'chat-message msg-theirs';
                         
                         let userLabel = isMine ? '' : `<div style="font-size: 0.65rem; color: var(--primary); margin-bottom: 4px; font-weight: bold;">${data.username}</div>`;
                         
                         let messageContent = data.message;
-                        if (messageContent.startsWith('<a href')) {
-                            // It's an HTML attachment link, let it render
+                        if (messageContent.startsWith('<a href') || messageContent.includes('class="msg-attachment"')) {
+                            // It's HTML or an attachment link, let it render
                         } else {
                             messageContent = messageContent.replace(/\n/g, '<br>');
                         }
                         
+                        let deleteOptionHtml = '';
+                        if (isMine && data.id) {
+                            deleteOptionHtml = `<button class="delete-msg-inline-btn" title="Delete message" style="background:none; border:none; color:var(--status-high); cursor:pointer; font-size:0.75rem; margin-top:2px; display:inline-flex; align-items:center; gap:2px; opacity:0.6; transition:opacity 0.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.6">
+                                <i data-lucide="trash-2" style="width:12px;"></i> Delete
+                            </button>`;
+                        }
+
                         msgDiv.innerHTML = `
                             <div class="msg-bubble">
                                 ${userLabel}
                                 ${messageContent}
                             </div>
-                            <span class="msg-time">Just now</span>
+                            <div style="display:flex; justify-content:${isMine ? 'flex-end' : 'flex-start'}; align-items:center; gap:8px; width:100%;">
+                                <span class="msg-time">Just now</span>
+                                ${deleteOptionHtml}
+                            </div>
                         `;
                         chatMessagesArea.appendChild(msgDiv);
+                        lucide.createIcons();
                         chatMessagesArea.scrollTop = chatMessagesArea.scrollHeight;
                     };
                     chatSocket.onclose = function(e) {
@@ -1352,14 +1239,15 @@
             const msgBtn = partner.querySelector('.btn-icon-outline');
             const addBtn = partner.querySelector('.btn-icon-fill');
             const name = partner.querySelector('.partner-details h4').innerText;
-            const subject = partner.querySelector('.partner-details p').innerText;
-            const level = partner.querySelector('.partner-details .level-pill').innerText;
             const imgUrl = partner.querySelector('.partner-avatar').src;
+            const partnerUsername = partner.getAttribute('data-username');
 
             if (msgBtn) {
                 msgBtn.addEventListener('click', function(e) {
                     e.preventDefault();
-                    openChatModal(name, subject, level, imgUrl);
+                    const activeSubject = partner.querySelector('.partner-subject').innerText;
+                    const activeLevel = partner.querySelector('.level-pill').innerText;
+                    openChatModal(name, activeSubject, activeLevel, imgUrl, partnerUsername);
                 });
             }
 
@@ -1377,7 +1265,9 @@
                         this.style.background = 'var(--status-completed)';
                         this.innerHTML = '<i data-lucide="check" style="width: 16px;"></i>';
                         lucide.createIcons();
-                        openChatModal(name, subject, level, imgUrl);
+                        const activeSubject = partner.querySelector('.partner-subject').innerText;
+                        const activeLevel = partner.querySelector('.level-pill').innerText;
+                        openChatModal(name, activeSubject, activeLevel, imgUrl, partnerUsername);
                     }
                 });
             }
@@ -1395,9 +1285,10 @@
                     e.preventDefault();
                     
                     const name = student.querySelector('.so-details h4').innerText;
-                    const subject = student.querySelector('.so-details p:nth-child(2)').innerText;
-                    const levelRaw = student.querySelector('.so-details p:nth-child(3) span:nth-child(2)').innerText;
+                    const subject = student.querySelector('.so-subject').innerText;
+                    const levelRaw = student.querySelector('.so-level').innerText;
                     const imgUrl = student.querySelector('.so-avatar').src;
+                    const partnerUsername = student.getAttribute('data-username');
 
                     // Update UI button state
                     if (this.innerText === 'Connect') {
@@ -1407,10 +1298,64 @@
                         this.style.borderColor = 'var(--status-completed)';
                     }
                     
-                    openChatModal(name, subject, levelRaw, imgUrl);
+                    openChatModal(name, subject, levelRaw, imgUrl, partnerUsername);
                 });
             }
         });
+        
+        // Auto-connect chat from profile page redirect
+        const urlParams = new URLSearchParams(window.location.search);
+        const chatWithUsername = urlParams.get('chat_with');
+        if (chatWithUsername) {
+            let studentItem = document.querySelector(`.student-online-item[data-username="${chatWithUsername}"]`);
+            if (!studentItem) {
+                // If the user isn't in the list, create a temporary peer card in the sidebar so they can connect!
+                const studentList = document.querySelector('.students-list');
+                if (studentList) {
+                    studentItem = document.createElement('div');
+                    studentItem.className = 'student-online-item';
+                    studentItem.setAttribute('data-username', chatWithUsername);
+                    studentItem.style.display = 'none'; // hide it so it doesn't mess up layout
+                    
+                    const cleanName = chatWithUsername.replace(/_int|_pro|_beg/g, '');
+                    const displayName = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
+                    
+                    studentItem.innerHTML = `
+                        <div class="so-info">
+                            <img src="https://ui-avatars.com/api/?name=${displayName}&background=random" class="so-avatar">
+                            <div class="so-details">
+                                <h4>${displayName}</h4>
+                                <p class="so-subject">Mathematics</p>
+                                <p><span class="dot" style="display:inline-block; width:6px; height:6px; border-radius:50%; margin-right:4px; background:var(--status-completed);"></span><span class="so-level" style="font-size:0.65rem;">Intermediate</span></p>
+                            </div>
+                        </div>
+                        <button class="btn-outline">Connect</button>
+                    `;
+                    studentList.appendChild(studentItem);
+                    
+                    // Attach click handler same as others
+                    const connectBtn = studentItem.querySelector('.btn-outline');
+                    connectBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const name = studentItem.querySelector('.so-details h4').innerText;
+                        const subject = studentItem.querySelector('.so-subject').innerText;
+                        const levelRaw = studentItem.querySelector('.so-level').innerText;
+                        const imgUrl = studentItem.querySelector('.so-avatar').src;
+                        const partnerUsername = studentItem.getAttribute('data-username');
+                        openChatModal(name, subject, levelRaw, imgUrl, partnerUsername);
+                    });
+                }
+            }
+            if (studentItem) {
+                const connectBtn = studentItem.querySelector('.btn-outline');
+                if (connectBtn) {
+                    // Click it after a minor delay to let the page initialize
+                    setTimeout(() => {
+                        connectBtn.click();
+                    }, 500);
+                }
+            }
+        }
 
         // Add Schedule functionality
         const openAddScheduleBtn = document.getElementById('openAddScheduleBtn');
@@ -1587,34 +1532,12 @@
                     
                     // Send voice note attachment
                     const attachmentHtml = `
-                        <div class="msg-attachment" style="cursor: pointer;" onclick="alert('Playing voice message...')">
+                        <div class="msg-attachment voice-msg" style="cursor: pointer;">
                             <i data-lucide="play" style="width: 16px; color: white;"></i>
                             <span>Voice_Message.mp3 (0:04)</span>
                         </div>
                     `;
-                    sendChatMessage('', attachmentHtml);
-                }
-            });
-        }
-
-        if (chatFileInput) {
-            chatFileInput.addEventListener('change', function() {
-                if (this.files && this.files[0]) {
-                    const file = this.files[0];
-                    const isImage = file.type.startsWith('image/');
-                    const iconType = isImage ? 'image' : 'file-text';
-                    
-                    const attachmentHtml = `
-                        <div class="msg-attachment" onclick="alert('Downloading ${file.name}...')">
-                            <i data-lucide="${iconType}" style="width: 16px; color: white;"></i>
-                            <span>${file.name}</span>
-                            <i data-lucide="download" style="width: 14px; margin-left: auto;"></i>
-                        </div>
-                    `;
-                    sendChatMessage('', attachmentHtml);
-                    
-                    // Reset input
-                    this.value = '';
+                    sendChatMessage(attachmentHtml, true);
                 }
             });
         }
@@ -1769,117 +1692,28 @@
                 newSubjectInput.value = '';
             });
 
-            saveSubjectBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                const subjectName = newSubjectInput.value;
-                if (subjectName && subjectName.trim() !== '') {
-                    const cleanName = subjectName.trim();
-                    const navList = addSubjectBtn.parentElement;
-                    const newItem = document.createElement('a');
-                    newItem.href = '#';
-                    
-                    // Generate a unique subject class and add it to subjects array
-                    const newClass = 'subj-' + Date.now();
-                    subjects.push(newClass);
-                    newItem.className = 'nav-item ' + newClass;
-                    
-                    // Determine smart icon
-                    const lowerName = cleanName.toLowerCase();
-                    let iconName = 'book-open';
-                    if (lowerName.includes('java') || lowerName.includes('python') || lowerName.includes('c++') || lowerName.includes('code')) iconName = 'code';
-                    else if (lowerName.includes('data') || lowerName.includes('sql')) iconName = 'database';
-                    else if (lowerName.includes('web') || lowerName.includes('html')) iconName = 'globe';
-                    else if (lowerName.includes('art') || lowerName.includes('design')) iconName = 'palette';
-                    else if (lowerName.includes('history') || lowerName.includes('time')) iconName = 'hourglass';
-                    else if (lowerName.includes('music')) iconName = 'music';
-                    else if (lowerName.includes('math') || lowerName.includes('calc')) iconName = 'calculator';
-                    else if (lowerName.includes('sci') || lowerName.includes('phy')) iconName = 'atom';
-                    else if (lowerName.includes('chem')) iconName = 'flask-conical';
-                    else if (lowerName.includes('bio')) iconName = 'dna';
-                    
-                    newItem.innerHTML = `
-                        <div class="nav-icon" style="background: #e0e7ff; color: var(--primary); display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; margin-right: 12px;"><i data-lucide="${iconName}" style="width: 18px;"></i></div>
-                        ${cleanName}
-                        <i data-lucide="trash-2" class="delete-subject-btn" style="width: 16px; color: #ef4444; margin-left: auto; z-index: 2;" title="Delete"></i>
-                    `;
-                    // Insert before the form/button
-                    navList.insertBefore(newItem, addSubjectBtn);
-                    
-                    // Generate dummy study partners for this new subject
-                    const partnersList = document.querySelector('.partner-list');
-                    if (partnersList) {
-                        const allNames = ["Alex Costa", "Sarah Lee", "David Kim", "John Doe", "Jane Smith", "Emily Chen", "Michael Johnson", "Chris Evans", "Anna Bella", "Rohit Sharma", "Priya K"];
-                        const allLevels = [
-                            { level: "Beginner", levelClass: "pill-beg" },
-                            { level: "Intermediate", levelClass: "pill-int" },
-                            { level: "Pro", levelClass: "pill-pro" }
-                        ];
-                        
-                        const numPartners = Math.floor(Math.random() * 4) + 3; // 3 to 6 partners
-                        const dummyNames = [];
-                        for(let i=0; i<numPartners; i++) {
-                            const randName = allNames[Math.floor(Math.random() * allNames.length)];
-                            const randLevel = allLevels[Math.floor(Math.random() * allLevels.length)];
-                            dummyNames.push({ name: randName + (i>0?" "+i:""), level: randLevel.level, levelClass: randLevel.levelClass });
-                        }
-                        
-                        dummyNames.forEach(dummy => {
-                            const newPartner = document.createElement('div');
-                            newPartner.className = 'partner-item';
-                            newPartner.style.display = 'none'; // Hidden initially
-                            newPartner.innerHTML = `
-                                <div class="partner-info">
-                                    <img src="https://ui-avatars.com/api/?name=${dummy.name.replace(' ', '+')}&background=random" class="partner-avatar" alt="${dummy.name}">
-                                    <div class="partner-details">
-                                        <h4>${dummy.name}</h4>
-                                        <p>${subjectName.trim()}</p>
-                                        <span class="level-pill ${dummy.levelClass}">${dummy.level}</span>
-                                    </div>
-                                </div>
-                                <div class="partner-actions">
-                                    <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
-                                    <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
-                                </div>
-                            `;
-                            partnersList.appendChild(newPartner);
-                            attachPartnerItemListener(newPartner);
-                        });
-                    }
-
-                    lucide.createIcons();
-                    attachNavItemListener(newItem);
-                    
-                    // Reset
-                    addSubjectForm.style.display = 'none';
-                    addSubjectBtn.style.display = 'flex';
-                    newSubjectInput.value = '';
-                }
-            });
-            
-            newSubjectInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    saveSubjectBtn.click();
-                }
-            });
-            
             // Delete subject logic
             document.addEventListener('click', function(e) {
                 const deleteSubjectBtn = e.target.closest('.delete-subject-btn');
                 if (deleteSubjectBtn) {
                     e.preventDefault();
                     e.stopPropagation();
-                    const navItem = deleteSubjectBtn.closest('.nav-item');
-                    if (navItem) {
-                        const isActive = navItem.classList.contains('active');
-                        // if it was active, reset things
-                        if (isActive) {
-                            resetNavItems();
-                            applySubjectFilter(null, null);
-                            currentSubjectClass = null;
-                            currentSubjectName = null;
+                    const selectionId = deleteSubjectBtn.getAttribute('data-selection-id');
+                    if (selectionId) {
+                        document.getElementById('deleteSubjectIdInput').value = selectionId;
+                        document.getElementById('deleteSubjectForm').submit();
+                    } else {
+                        const navItem = deleteSubjectBtn.closest('.nav-item');
+                        if (navItem) {
+                            const isActive = navItem.classList.contains('active');
+                            if (isActive) {
+                                resetNavItems();
+                                applySubjectFilter(null, null);
+                                currentSubjectClass = null;
+                                currentSubjectName = null;
+                            }
+                            navItem.remove();
                         }
-                        navItem.remove();
                     }
                 }
 
@@ -1895,6 +1729,182 @@
                 }
             });
         }
+
+        // --- VOICE PLAYBACK WEB SPEECH SYNTHESIS LOGIC ---
+        let activeUtterance = null;
+        let activePlayButton = null;
+
+        function playVoiceMessage(attachment) {
+            activePlayButton = attachment;
+
+            const iconEl = attachment.querySelector('i[data-lucide]');
+            const spanEl = attachment.querySelector('span');
+
+            // Save original styles/text to restore later
+            attachment.setAttribute('data-original-bg', attachment.style.background || '');
+            if (spanEl) {
+                attachment.setAttribute('data-original-text', spanEl.innerText);
+                spanEl.innerText = "Playing voice message...";
+            }
+
+            // Set visual state to semi-transparent premium purple
+            attachment.style.background = 'rgba(124, 58, 237, 0.25)';
+            attachment.style.border = '1px solid rgba(124, 58, 237, 0.4)';
+            attachment.style.boxShadow = '0 0 8px rgba(124, 58, 237, 0.3)';
+
+            // Transition play icon to volume-2
+            if (iconEl) {
+                iconEl.setAttribute('data-lucide', 'volume-2');
+                lucide.createIcons();
+            }
+
+            // Determine active subject name to speak
+            let subjectName = "this session";
+            const partnerSubjectEl = document.getElementById('chatPartnerSubject');
+            if (partnerSubjectEl && partnerSubjectEl.innerText) {
+                const text = partnerSubjectEl.innerText.split('•')[0].trim();
+                if (text && text !== "Subject" && text !== "General") {
+                    subjectName = text;
+                }
+            }
+
+            // Prepare voice note content
+            const textToSpeak = `Hi there! I am really excited to study with you. Let's collaborate and solve some problems in ${subjectName} together!`;
+
+            const utterance = new SpeechSynthesisUtterance(textToSpeak);
+            activeUtterance = utterance;
+
+            // Load english voice fallback
+            const voices = window.speechSynthesis.getVoices();
+            if (voices.length > 0) {
+                const englishVoice = voices.find(v => v.lang.startsWith('en') && v.name.includes('Google')) ||
+                                     voices.find(v => v.lang.startsWith('en'));
+                if (englishVoice) {
+                    utterance.voice = englishVoice;
+                }
+            }
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+
+            utterance.onend = function() {
+                if (activePlayButton === attachment) {
+                    resetVoiceMsgState(attachment);
+                    activeUtterance = null;
+                    activePlayButton = null;
+                }
+            };
+
+            utterance.onerror = function() {
+                if (activePlayButton === attachment) {
+                    resetVoiceMsgState(attachment);
+                    activeUtterance = null;
+                    activePlayButton = null;
+                }
+            };
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function resetVoiceMsgState(attachment) {
+            const iconEl = attachment.querySelector('i[data-lucide]');
+            const spanEl = attachment.querySelector('span');
+
+            // Restore text
+            if (spanEl) {
+                const originalText = attachment.getAttribute('data-original-text') || 'Voice_Message.mp3 (0:04)';
+                spanEl.innerText = originalText;
+            }
+
+            // Restore original background & styles
+            const originalBg = attachment.getAttribute('data-original-bg') || '';
+            attachment.style.background = originalBg;
+            attachment.style.border = '';
+            attachment.style.boxShadow = '';
+
+            // Revert icon to play
+            if (iconEl) {
+                iconEl.setAttribute('data-lucide', 'play');
+                lucide.createIcons();
+            }
+        }
+
+        // Delegated click handler on chatMessagesArea to catch voice message plays/cancels
+        const messagesArea = document.getElementById('chatMessagesArea');
+        if (messagesArea) {
+            messagesArea.addEventListener('click', function(e) {
+                const attachment = e.target.closest('.msg-attachment');
+                if (!attachment) return;
+
+                // Match if it's a voice message (has voice-msg class or Voice_Message.mp3 in text)
+                const isVoice = attachment.classList.contains('voice-msg') || 
+                                attachment.innerText.includes('Voice_Message.mp3');
+                if (!isVoice) return;
+
+                e.preventDefault();
+                e.stopPropagation();
+
+                // If currently playing this specific message, click again to stop
+                if (activePlayButton === attachment) {
+                    window.speechSynthesis.cancel();
+                    resetVoiceMsgState(attachment);
+                    activeUtterance = null;
+                    activePlayButton = null;
+                    return;
+                }
+
+                // If another voice message was playing, cancel it first
+                if (activePlayButton) {
+                    window.speechSynthesis.cancel();
+                    resetVoiceMsgState(activePlayButton);
+                }
+
+                // Play the new voice message
+                playVoiceMessage(attachment);
+            });
+        }
+
+        // --- CLEAR CHAT & DELETE MESSAGE EVENT LISTENERS ---
+        const clearChatBtn = document.getElementById('clearChatBtn');
+        if (clearChatBtn) {
+            clearChatBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (confirm("Are you sure you want to clear all chat messages in this room? This cannot be undone.")) {
+                    if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
+                        chatSocket.send(JSON.stringify({
+                            'action': 'clear_chat'
+                        }));
+                    }
+                }
+            });
+        }
+
+        if (messagesArea) {
+            messagesArea.addEventListener('click', function(e) {
+                const deleteBtn = e.target.closest('.delete-msg-inline-btn');
+                if (deleteBtn) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const msgDiv = deleteBtn.closest('.chat-message');
+                    if (msgDiv) {
+                        const messageId = msgDiv.getAttribute('data-message-id');
+                        if (messageId && confirm("Are you sure you want to delete this message?")) {
+                            if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
+                                chatSocket.send(JSON.stringify({
+                                    'action': 'delete_message',
+                                    'message_id': parseInt(messageId)
+                                }));
+                            }
+                        }
+                    }
+                }
+            });
+        }
     </script>
+    <form method="POST" id="deleteSubjectForm" style="display: none;">
+        {% csrf_token %}
+        <input type="hidden" name="delete_subject" value="1">
+        <input type="hidden" name="subject_id" id="deleteSubjectIdInput">
+    </form>
 </body>
 </html>

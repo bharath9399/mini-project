@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ target_user.get_full_name|default:target_user.username }}'s Profile - Study Partner</title>
+    {% load static %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .profile-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 30px;
+            padding: 10px;
+            width: 100%;
+        }
+        
+        .profile-left-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            padding: 40px 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.02);
+            position: relative;
+        }
+
+        .avatar-container {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .large-avatar {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            border: 4px solid white;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .status-ring {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 3px solid white;
+        }
+
+        .status-online {
+            background: var(--status-completed);
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            animation: pulse 2s infinite;
+        }
+
+        .status-offline {
+            background: #9ca3af;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+            }
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 5px;
+        }
+
+        .profile-username {
+            font-size: 0.9rem;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .profile-details-list {
+            width: 100%;
+            text-align: left;
+            margin-bottom: 30px;
+            border-top: 1px solid var(--border);
+            padding-top: 20px;
+        }
+
+        .profile-detail-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .profile-detail-item i {
+            color: var(--primary);
+            width: 18px;
+        }
+
+        .profile-detail-item span {
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .action-buttons {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn-full {
+            width: 100%;
+            padding: 12px;
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: none;
+        }
+
+        .btn-chat {
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            color: white;
+        }
+
+        .btn-chat:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-back {
+            background: #f3f4f6;
+            color: var(--text-main);
+            border: 1px solid var(--border);
+        }
+
+        .btn-back:hover {
+            background: #e5e7eb;
+        }
+
+        .profile-right-content {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .subject-card {
+            background: white;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: transform 0.2s;
+        }
+
+        .subject-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .subject-card-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .subj-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .subj-details h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .subj-details p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .level-badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 10px;
+            text-transform: capitalize;
+        }
+
+        .progress-section {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .progress-circle-container {
+            min-width: 110px;
+            text-align: center;
+        }
+
+        .progress-desc {
+            flex: 1;
+        }
+
+        .progress-desc h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .progress-desc p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .tasks-profile-list {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .task-profile-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 15px;
+            background: #f9fafb;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+        }
+
+        .task-profile-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .task-profile-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .task-profile-title.completed {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .status-pill {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 12px;
+        }
+        
+        .status-pill.completed {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+        
+        .status-pill.pending {
+            background: #fef3c7;
+            color: #d97706;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <div class="hamburger" onclick="window.location.href='/dashboard/'">
+                    <i data-lucide="arrow-left" style="color: white; width: 24px;"></i>
+                </div>
+                <div class="user-info">
+                    <h2>Student Profile</h2>
+                    <p>Learn together, grow together!</p>
+                </div>
+            </div>
+            
+            <div class="header-center">
+                <div class="header-center-top">
+                    <i data-lucide="book-open" style="width: 28px; color: white;"></i>
+                    <h1>Study Partner</h1>
+                </div>
+                <p>Smart Student Collaboration System</p>
+            </div>
+            
+            <div class="header-right">
+                <div class="profile-menu" onclick="window.location.href='/dashboard/'" style="cursor: pointer;">
+                    <img src="https://ui-avatars.com/api/?name={{ user.first_name|default:'Manikanta' }}&background=6366f1&color=fff" alt="Avatar">
+                    <span>{{ user.first_name|default:"Manikanta" }}</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-content" style="overflow-y: auto;">
+            <div class="profile-container">
+                <!-- Left Sidebar: Profile Card -->
+                <div class="profile-left-card">
+                    <div class="avatar-container">
+                        <img src="https://ui-avatars.com/api/?name={{ target_user.first_name }}+{{ target_user.last_name }}&background=random&size=120" class="large-avatar" alt="Avatar">
+                        <div class="status-ring {% if target_profile.is_online %}status-online{% else %}status-offline{% endif %}"></div>
+                    </div>
+
+                    <h2 class="profile-name">{{ target_user.first_name }} {{ target_user.last_name }}</h2>
+                    <p class="profile-username">@{{ target_user.username }}</p>
+
+                    <div class="profile-details-list">
+                        <div class="profile-detail-item">
+                            <i data-lucide="mail"></i>
+                            <div>Email: <br><span>{{ target_user.email|default:"Not shared" }}</span></div>
+                        </div>
+                        <div class="profile-detail-item">
+                            <i data-lucide="shield-check"></i>
+                            <div>Status: <br><span>{% if target_profile.is_online %}Active Now{% else %}Offline{% endif %}</span></div>
+                        </div>
+                        <div class="profile-detail-item">
+                            <i data-lucide="calendar"></i>
+                            <div>Joined: <br><span>{{ target_user.date_joined|date:"M Y" }}</span></div>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn-full btn-chat" onclick="window.location.href='/dashboard/?chat_with={{ target_user.username }}'">
+                            <i data-lucide="message-square"></i> Chat with {{ target_user.first_name|default:target_user.username }}
+                        </button>
+                        <button class="btn-full btn-back" onclick="window.location.href='/dashboard/'">
+                            <i data-lucide="arrow-left"></i> Back to Dashboard
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Side: Content -->
+                <div class="profile-right-content">
+                    <!-- Subjects Card -->
+                    <div class="card">
+                        <h2 class="card-title"><i data-lucide="book-open"></i> Selected Subjects</h2>
+                        {% if subject_selections %}
+                            <div class="subjects-grid">
+                                {% for sel in subject_selections %}
+                                    <div class="subject-card">
+                                        <div class="subject-card-left">
+                                            <div class="subj-icon" style="
+                                                {% if sel.subject.name|lower == 'mathematics' %}
+                                                    background: var(--bg-math); color: var(--c-math);
+                                                {% elif sel.subject.name|lower == 'physics' %}
+                                                    background: var(--bg-phy); color: var(--c-phy);
+                                                {% elif sel.subject.name|lower == 'chemistry' %}
+                                                    background: var(--bg-chem); color: var(--c-chem);
+                                                {% elif sel.subject.name|lower == 'biology' %}
+                                                    background: var(--bg-bio); color: var(--c-bio);
+                                                {% elif sel.subject.name|lower == 'economics' %}
+                                                    background: var(--bg-eco); color: var(--c-eco);
+                                                {% elif sel.subject.name|lower == 'zoology' %}
+                                                    background: var(--bg-zoo); color: var(--c-zoo);
+                                                {% else %}
+                                                    background: var(--primary-light); color: var(--primary);
+                                                {% endif %}
+                                            ">
+                                                <i data-lucide="
+                                                    {% if sel.subject.name|lower == 'mathematics' %}calculator
+                                                    {% elif sel.subject.name|lower == 'physics' %}atom
+                                                    {% elif sel.subject.name|lower == 'chemistry' %}flask-conical
+                                                    {% elif sel.subject.name|lower == 'biology' %}dna
+                                                    {% elif sel.subject.name|lower == 'economics' %}line-chart
+                                                    {% elif sel.subject.name|lower == 'zoology' %}bug
+                                                    {% else %}graduation-cap{% endif %}
+                                                "></i>
+                                            </div>
+                                            <div class="subj-details">
+                                                <h4>{{ sel.subject.name }}</h4>
+                                                <p>Proficiency Level</p>
+                                            </div>
+                                        </div>
+                                        <span class="level-badge" style="
+                                            {% if sel.level == 'pro' %}
+                                                background: var(--bg-phy); color: var(--c-phy);
+                                            {% elif sel.level == 'intermediate' %}
+                                                background: var(--bg-math); color: var(--c-math);
+                                            {% else %}
+                                                background: var(--bg-chem); color: var(--c-chem);
+                                            {% endif %}
+                                        ">{{ sel.level }}</span>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 10px;">This user has not selected any specific study subjects yet.</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Tasks & Goals Card -->
+                    <div class="card">
+                        <h2 class="card-title"><i data-lucide="target"></i> Goals & Today's Tasks</h2>
+                        <div class="tracker-card" style="margin-bottom: 25px;">
+                            <div class="tracker-left" style="min-width: 130px;">
+                                <div class="circ-chart">
+                                    <svg viewBox="0 0 36 36">
+                                        <path class="bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                        <path class="fill" stroke-dasharray="{{ task_progress }}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                    </svg>
+                                    <div class="text" style="font-size: 1.2rem;">{{ task_progress }}%</div>
+                                </div>
+                            </div>
+                            <div class="progress-desc">
+                                <h3>Weekly Goal Completion</h3>
+                                <p>{{ completed_tasks }} out of {{ total_tasks }} tasks completed. Encouraging active study collaboration reduces learning time and enhances concept retention!</p>
+                            </div>
+                        </div>
+
+                        <h3 class="sidebar-group-title" style="padding: 0; font-size: 0.8rem;">Task Breakdown</h3>
+                        {% if tasks %}
+                            <div class="tasks-profile-list">
+                                {% for task in tasks %}
+                                    <div class="task-profile-item">
+                                        <div class="task-profile-left">
+                                            <i data-lucide="{% if task.completed %}check-circle-2{% else %}circle{% endif %}" style="width: 18px; color: {% if task.completed %}var(--status-completed){% else %}var(--text-muted){% endif %};"></i>
+                                            <span class="task-profile-title {% if task.completed %}completed{% endif %}">{{ task.title }}</span>
+                                        </div>
+                                        <span class="status-pill {% if task.completed %}completed{% else %}pending{% endif %}">
+                                            {% if task.completed %}Completed{% else %}Pending{% endif %}
+                                        </span>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 10px;">This user has no tasks scheduled for today.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>
