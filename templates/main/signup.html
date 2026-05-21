@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Study Partner</title>
+    {% load static %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        :root {
+            --brand-purple: #8b5cf6;
+            --brand-blue: #3b82f6;
+            --brand-gradient: linear-gradient(135deg, #a855f7, #3b82f6);
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        .signup-wrapper {
+            display: flex;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        /* Left Side Panel (Same as Login) */
+        .info-panel {
+            flex: 1.2;
+            background: var(--brand-gradient);
+            padding: 60px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+        }
+
+        .logo-icon {
+            font-size: 2.5rem;
+        }
+
+        .logo-text h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8rem;
+            margin: 0;
+        }
+
+        .hero-text {
+            margin-top: 40px;
+            max-width: 450px;
+            z-index: 2;
+        }
+
+        .hero-text h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3rem;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        .illustration-area {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 600px;
+            z-index: 1;
+        }
+
+        .illustration-area img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Right Side Signup Card */
+        .form-panel {
+            flex: 1.5;
+            background: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .signup-card {
+            background: white;
+            width: 100%;
+            max-width: 550px;
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .signup-card h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8rem;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .signup-card p.subtitle {
+            color: #6b7280;
+            font-size: 0.95rem;
+            margin-bottom: 30px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            text-align: left;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+
+        .input-wrapper input, .input-wrapper select {
+            width: 100%;
+            padding: 12px 12px 12px 35px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .input-wrapper input:focus, .input-wrapper select:focus {
+            outline: none;
+            border-color: var(--brand-blue);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .signup-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--brand-gradient);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+
+        .signup-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .login-footer {
+            margin-top: 25px;
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .login-footer a {
+            color: var(--brand-blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        @media (max-width: 992px) {
+            .info-panel {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-wrapper">
+        <!-- Left Panel -->
+        <div class="info-panel">
+            <div class="logo-area" onclick="location.href='{% url 'login' %}'">
+                <div class="logo-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div class="logo-text">
+                    <h2>Study Partner</h2>
+                </div>
+            </div>
+
+            <div class="hero-text">
+                <h1>Join the Community of Learners</h1>
+                <p>Track your goals, connect with experts, and grow together.</p>
+            </div>
+
+            <div class="illustration-area">
+                <img src="{% static 'images/login_illustration.png' %}" alt="Students studying">
+            </div>
+        </div>
+
+        <!-- Right Panel -->
+        <div class="form-panel">
+            <div class="signup-card">
+                <h2>Create Account</h2>
+                <p class="subtitle">Start your journey with us today</p>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div style="color: #ef4444; background: #fee2e2; padding: 10px; border-radius: 8px; margin-bottom: 20px; font-size: 0.85rem;">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="firstName">First Name</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-user"></i>
+                                <input type="text" id="firstName" name="first_name" placeholder="John" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-user"></i>
+                                <input type="text" id="lastName" name="last_name" placeholder="Doe" required>
+                            </div>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="username">Username</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-at"></i>
+                                <input type="text" id="username" name="username" placeholder="johndoe" required>
+                            </div>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="email">Email Address</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-envelope"></i>
+                                <input type="email" id="email" name="email" placeholder="john@example.com" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="role">I am a...</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-users"></i>
+                                <select id="role" name="role">
+                                    <option value="student">Student</option>
+                                    <option value="teacher">Teacher</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="level">Level</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-signal"></i>
+                                <select id="level" name="level">
+                                    <option value="beginner">Beginner</option>
+                                    <option value="intermediate">Intermediate</option>
+                                    <option value="pro">Pro / Expert</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="password">Password</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="password" name="password" placeholder="••••••••" required>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="signup-btn">Create Account</button>
+                </form>
+
+                <div class="login-footer">
+                    Already have an account? <a href="{% url 'login' %}">Log in here</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

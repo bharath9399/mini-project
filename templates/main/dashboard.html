@@ -1,0 +1,1900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Study Partner</title>
+    {% load static %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <div class="hamburger">
+                    <i data-lucide="menu" style="color: white; width: 24px;"></i>
+                </div>
+                <div class="user-info">
+                    <h2>Welcome, {{ user.first_name|default:"Manikanta" }} 👋</h2>
+                    <p>Keep learning, keep growing!</p>
+                </div>
+            </div>
+            
+            <div class="header-center">
+                <div class="header-center-top">
+                    <i data-lucide="book-open" style="width: 28px; color: white;"></i>
+                    <h1>Study Partner</h1>
+                </div>
+                <p>Smart Student Collaboration System</p>
+            </div>
+            
+            <div class="header-right">
+                <div style="position: relative;" id="notificationContainer">
+                    <button class="notification-btn" id="notificationBtn">
+                        <i data-lucide="bell" style="width: 24px;"></i>
+                        <span class="notification-badge">5</span>
+                    </button>
+                    <!-- Notification Dropdown Menu -->
+                    <div id="notificationMenu" style="display: none; position: absolute; right: 0; top: 120%; background: white; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 10px 15px rgba(0,0,0,0.1); z-index: 100; min-width: 320px; overflow: hidden;">
+                        <div style="padding: 15px; border-bottom: 1px solid #f3f4f6; display: flex; justify-content: space-between; align-items: center;">
+                            <h3 style="margin: 0; font-size: 1rem; color: var(--text-main);">Notifications</h3>
+                            <span style="font-size: 0.75rem; color: var(--primary); cursor: pointer;">Mark all as read</span>
+                        </div>
+                        <div style="max-height: 350px; overflow-y: auto;">
+                            <!-- Notification Item 1 -->
+                            <div style="padding: 15px; border-bottom: 1px solid #f3f4f6; display: flex; gap: 12px; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
+                                <div style="width: 40px; height: 40px; border-radius: 50%; background: #e0e7ff; color: var(--primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                    <i data-lucide="user-plus" style="width: 20px;"></i>
+                                </div>
+                                <div>
+                                    <p style="margin: 0; font-size: 0.85rem; color: var(--text-main);"><strong>Ravi Kumar</strong> is now online.</p>
+                                    <span style="font-size: 0.7rem; color: var(--text-muted);">2 mins ago</span>
+                                </div>
+                            </div>
+                            <!-- Notification Item 2 -->
+                            <div style="padding: 15px; border-bottom: 1px solid #f3f4f6; display: flex; gap: 12px; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
+                                <div style="width: 40px; height: 40px; border-radius: 50%; background: #dcfce7; color: #16a34a; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                    <i data-lucide="user-check" style="width: 20px;"></i>
+                                </div>
+                                <div>
+                                    <p style="margin: 0; font-size: 0.85rem; color: var(--text-main);"><strong>Keerthi N.</strong> requested to study Physics with you.</p>
+                                    <span style="font-size: 0.7rem; color: var(--text-muted);">15 mins ago</span>
+                                </div>
+                            </div>
+                            <!-- Notification Item 3 -->
+                            <div style="padding: 15px; border-bottom: 1px solid #f3f4f6; display: flex; gap: 12px; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
+                                <div style="width: 40px; height: 40px; border-radius: 50%; background: #fee2e2; color: #dc2626; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                    <i data-lucide="target" style="width: 20px;"></i>
+                                </div>
+                                <div>
+                                    <p style="margin: 0; font-size: 0.85rem; color: var(--text-main);">Project update: Added new task to <strong>Quantum Mechanics</strong>.</p>
+                                    <span style="font-size: 0.7rem; color: var(--text-muted);">1 hour ago</span>
+                                </div>
+                            </div>
+                            <!-- Notification Item 4 -->
+                            <div style="padding: 15px; border-bottom: 1px solid #f3f4f6; display: flex; gap: 12px; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
+                                <div style="width: 40px; height: 40px; border-radius: 50%; background: #e0e7ff; color: var(--primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                    <i data-lucide="user-plus" style="width: 20px;"></i>
+                                </div>
+                                <div>
+                                    <p style="margin: 0; font-size: 0.85rem; color: var(--text-main);"><strong>Shalini P.</strong> is now online.</p>
+                                    <span style="font-size: 0.7rem; color: var(--text-muted);">2 hours ago</span>
+                                </div>
+                            </div>
+                            <!-- Notification Item 5 -->
+                            <div style="padding: 15px; border-bottom: 1px solid #f3f4f6; display: flex; gap: 12px; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
+                                <div style="width: 40px; height: 40px; border-radius: 50%; background: #ffedd5; color: #ea580c; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                    <i data-lucide="message-square" style="width: 20px;"></i>
+                                </div>
+                                <div>
+                                    <p style="margin: 0; font-size: 0.85rem; color: var(--text-main);">New doubt shared in <strong>Chemistry Discussion</strong>.</p>
+                                    <span style="font-size: 0.7rem; color: var(--text-muted);">3 hours ago</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="padding: 12px; text-align: center; border-top: 1px solid #f3f4f6;">
+                            <a href="#" style="font-size: 0.85rem; color: var(--primary); text-decoration: none; font-weight: 500;">View all notifications</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-menu">
+                    <img src="https://ui-avatars.com/api/?name={{ user.first_name|default:'Manikanta' }}&background=6366f1&color=fff" alt="Avatar">
+                    <span>{{ user.first_name|default:"Manikanta" }}</span>
+                    <i data-lucide="chevron-down" style="width: 16px;"></i>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- Left Sidebar -->
+            <aside class="sidebar-left">
+                <div>
+                    <h3 class="sidebar-group-title">Subjects</h3>
+                    <nav class="nav-list">
+                        <a href="#" class="nav-item active math">
+                            <div class="nav-icon"><i data-lucide="calculator"></i></div>
+                            Mathematics
+                            <i data-lucide="trash-2" class="delete-subject-btn" style="width: 16px; color: #ef4444; margin-left: auto; z-index: 2;" title="Delete"></i>
+                        </a>
+                        <a href="#" class="nav-item phy">
+                            <div class="nav-icon"><i data-lucide="atom"></i></div>
+                            Physics
+                            <i data-lucide="trash-2" class="delete-subject-btn" style="width: 16px; color: #ef4444; margin-left: auto; z-index: 2;" title="Delete"></i>
+                        </a>
+                        <a href="#" class="nav-item chem">
+                            <div class="nav-icon"><i data-lucide="flask-conical"></i></div>
+                            Chemistry
+                            <i data-lucide="trash-2" class="delete-subject-btn" style="width: 16px; color: #ef4444; margin-left: auto; z-index: 2;" title="Delete"></i>
+                        </a>
+                        <a href="#" class="nav-item bio">
+                            <div class="nav-icon"><i data-lucide="dna"></i></div>
+                            Biology
+                            <i data-lucide="trash-2" class="delete-subject-btn" style="width: 16px; color: #ef4444; margin-left: auto; z-index: 2;" title="Delete"></i>
+                        </a>
+                        <a href="#" class="nav-item eco">
+                            <div class="nav-icon"><i data-lucide="line-chart"></i></div>
+                            Economics
+                            <i data-lucide="trash-2" class="delete-subject-btn" style="width: 16px; color: #ef4444; margin-left: auto; z-index: 2;" title="Delete"></i>
+                        </a>
+                        <a href="#" class="nav-item zoo">
+                            <div class="nav-icon"><i data-lucide="bug"></i></div>
+                            Zoology
+                            <i data-lucide="trash-2" class="delete-subject-btn" style="width: 16px; color: #ef4444; margin-left: auto; z-index: 2;" title="Delete"></i>
+                        </a>
+                        <a href="#" id="addSubjectBtn" style="display: flex; align-items: center; justify-content: center; color: var(--primary); font-weight: 600; border: 1px dashed var(--primary); background: transparent; padding: 10px; margin-top: 5px; border-radius: 12px; text-decoration: none;">
+                            <i data-lucide="plus" style="width: 18px; margin-right: 5px;"></i> Add Subject
+                        </a>
+                        <div id="addSubjectForm" style="display: none; flex-direction: column; gap: 8px; margin-top: 5px;">
+                            <input type="text" id="newSubjectInput" placeholder="Subject Name..." style="padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 0.85rem; outline: none;">
+                            <div style="display: flex; gap: 5px;">
+                                <button id="saveSubjectBtn" style="flex: 1; padding: 6px; background: var(--primary); color: white; border: none; border-radius: 6px; font-size: 0.8rem; font-weight: 500; cursor: pointer;">Add</button>
+                                <button id="cancelSubjectBtn" style="flex: 1; padding: 6px; background: #f3f4f6; color: var(--text-main); border: none; border-radius: 6px; font-size: 0.8rem; font-weight: 500; cursor: pointer;">Cancel</button>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+
+                <div>
+                    <h3 class="sidebar-group-title">Weekly Goals</h3>
+                    <div class="card sidebar-weekly-card">
+                        <div class="swc-header">
+                            <span>Goal Completion</span>
+                            <span class="perc">75%</span>
+                        </div>
+                        <div class="swc-progress-bg">
+                            <div class="swc-progress-fill" style="width: 75%;"></div>
+                        </div>
+                        <p class="swc-completed">Completed: <span>15 / 20 Tasks</span></p>
+                        <p class="swc-tip">Keep going! You're doing great!</p>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="sidebar-group-title">Students Online</h3>
+                    <div class="students-list">
+                        <div class="student-online-item">
+                            <div class="so-info">
+                                <img src="https://ui-avatars.com/api/?name=Ravi+Kumar&background=random" class="so-avatar" alt="Ravi">
+                                <div class="so-details">
+                                    <h4>Ravi Kumar</h4>
+                                    <p>Mathematics</p>
+                                    <p style="margin-top: 2px;"><span class="dot dot-int"></span> <span style="font-size: 0.65rem;">Intermediate</span></p>
+                                </div>
+                            </div>
+                            <button class="btn-outline">Connect</button>
+                        </div>
+                        <div class="student-online-item">
+                            <div class="so-info">
+                                <img src="https://ui-avatars.com/api/?name=Keerthi+N&background=random" class="so-avatar" alt="Keerthi">
+                                <div class="so-details">
+                                    <h4>Keerthi N.</h4>
+                                    <p>Physics</p>
+                                    <p style="margin-top: 2px;"><span class="dot dot-pro"></span> <span style="font-size: 0.65rem;">Pro</span></p>
+                                </div>
+                            </div>
+                            <button class="btn-outline">Connect</button>
+                        </div>
+                        <div class="student-online-item">
+                            <div class="so-info">
+                                <img src="https://ui-avatars.com/api/?name=Shalini+P&background=random" class="so-avatar" alt="Shalini">
+                                <div class="so-details">
+                                    <h4>Shalini P.</h4>
+                                    <p>Chemistry</p>
+                                    <p style="margin-top: 2px;"><span class="dot dot-int"></span> <span style="font-size: 0.65rem;">Intermediate</span></p>
+                                </div>
+                            </div>
+                            <button class="btn-outline">Connect</button>
+                        </div>
+                        <div class="student-online-item">
+                            <div class="so-info">
+                                <img src="https://ui-avatars.com/api/?name=Arjun+R&background=random" class="so-avatar" alt="Arjun">
+                                <div class="so-details">
+                                    <h4>Arjun R.</h4>
+                                    <p>Biology</p>
+                                    <p style="margin-top: 2px;"><span class="dot dot-beg"></span> <span style="font-size: 0.65rem;">Beginner</span></p>
+                                </div>
+                            </div>
+                            <button class="btn-outline">Connect</button>
+                        </div>
+                        <div class="student-online-item hidden-student" style="display: none;">
+                            <div class="so-info">
+                                <img src="https://ui-avatars.com/api/?name=Neha+S&background=random" class="so-avatar" alt="Neha">
+                                <div class="so-details">
+                                    <h4>Neha S.</h4>
+                                    <p>Economics</p>
+                                    <p style="margin-top: 2px;"><span class="dot dot-pro"></span> <span style="font-size: 0.65rem;">Pro</span></p>
+                                </div>
+                            </div>
+                            <button class="btn-outline">Connect</button>
+                        </div>
+                        <div class="student-online-item hidden-student" style="display: none;">
+                            <div class="so-info">
+                                <img src="https://ui-avatars.com/api/?name=Vikas+M&background=random" class="so-avatar" alt="Vikas">
+                                <div class="so-details">
+                                    <h4>Vikas M.</h4>
+                                    <p>Zoology</p>
+                                    <p style="margin-top: 2px;"><span class="dot dot-int"></span> <span style="font-size: 0.65rem;">Intermediate</span></p>
+                                </div>
+                            </div>
+                            <button class="btn-outline">Connect</button>
+                        </div>
+                    </div>
+                    <a href="#" class="link-btn" id="viewAllBtn">View All Online Students &rarr;</a>
+                </div>
+            </aside>
+
+            <!-- Center Content -->
+            <main class="center-content">
+                
+                <div class="card">
+                    <h2 class="card-title"><i data-lucide="target"></i> Weekly Goals Tracker</h2>
+                    <div class="tracker-card">
+                        <div class="tracker-left">
+                            <span>Overall Progress</span>
+                            <div class="circ-chart">
+                                <svg viewBox="0 0 36 36">
+                                    <path class="bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                    <path class="fill" stroke-dasharray="75, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                </svg>
+                                <div class="text">75%</div>
+                            </div>
+                            <span class="tip">Great Progress!</span>
+                        </div>
+                        
+                        <div class="tracker-right">
+                            <div class="target-row">
+                                <div class="flex justify-between items-center">
+                                    <h4>This Week's Target</h4>
+                                </div>
+                                <p>Study 20 hours this week</p>
+                                <div class="target-progress">
+                                    <div class="tp-bar-bg">
+                                        <div class="tp-bar-fill" style="width: 75%;"></div>
+                                    </div>
+                                    <span>15 / 20 hours</span>
+                                </div>
+                            </div>
+                            
+                            <div class="stats-row">
+                                <div class="stat-box">
+                                    <div class="stat-icon" style="background: var(--bg-math); color: var(--c-math);"><i data-lucide="book-open"></i></div>
+                                    <div>
+                                        <h3>10</h3>
+                                        <p>Tasks Completed</p>
+                                    </div>
+                                </div>
+                                <div class="stat-box">
+                                    <div class="stat-icon" style="background: var(--bg-eco); color: var(--c-eco);"><i data-lucide="clock"></i></div>
+                                    <div>
+                                        <h3>15</h3>
+                                        <p>Hours Studied</p>
+                                    </div>
+                                </div>
+                                <div class="stat-box">
+                                    <div class="stat-icon" style="background: var(--bg-eco); color: var(--c-eco);"><i data-lucide="trophy"></i></div>
+                                    <div>
+                                        <h3>3</h3>
+                                        <p>Day Streak</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="tasks-header">
+                        <h2 class="card-title" style="margin: 0;"><i data-lucide="check-square"></i> Today's Tasks</h2>
+                        <button class="btn-primary"><i data-lucide="plus" style="width: 16px;"></i> Add Task</button>
+                    </div>
+                    
+                    <div class="task-list">
+                        <div class="task-item">
+                            <div class="task-left">
+                                <div class="checkbox checked"><i data-lucide="check" style="width: 14px; color: white;"></i></div>
+                                <span class="task-title">Complete Physics Notes</span>
+                                <span class="tag phy">Physics</span>
+                            </div>
+                            <div class="task-right">
+                                <span class="task-time"><i data-lucide="clock" style="width: 14px;"></i> 2h</span>
+                                <span class="task-status status completed">Completed</span>
+                                <button class="delete-task-btn" title="Delete Task"><i data-lucide="trash" style="width: 18px;"></i></button>
+                            </div>
+                        </div>
+                        <div class="task-item">
+                            <div class="task-left">
+                                <div class="checkbox"></div>
+                                <span class="task-title">Practice Mathematics Problems</span>
+                                <span class="tag math">Mathematics</span>
+                            </div>
+                            <div class="task-right">
+                                <span class="task-time"><i data-lucide="clock" style="width: 14px;"></i> 1.5h</span>
+                                <span class="task-status status high">High</span>
+                                <button class="delete-task-btn" title="Delete Task"><i data-lucide="trash" style="width: 18px;"></i></button>
+                            </div>
+                        </div>
+                        <div class="task-item">
+                            <div class="task-left">
+                                <div class="checkbox"></div>
+                                <span class="task-title">Revise Chemistry Chapter</span>
+                                <span class="tag chem">Chemistry</span>
+                            </div>
+                            <div class="task-right">
+                                <span class="task-time"><i data-lucide="clock" style="width: 14px;"></i> 1h</span>
+                                <span class="task-status status medium">Medium</span>
+                                <button class="delete-task-btn" title="Delete Task"><i data-lucide="trash" style="width: 18px;"></i></button>
+                            </div>
+                        </div>
+                        <div class="task-item">
+                            <div class="task-left">
+                                <div class="checkbox"></div>
+                                <span class="task-title">Watch Biology Video Lecture</span>
+                                <span class="tag bio">Biology</span>
+                            </div>
+                            <div class="task-right">
+                                <span class="task-time"><i data-lucide="clock" style="width: 14px;"></i> 1h</span>
+                                <span class="task-status status low">Low</span>
+                                <button class="delete-task-btn" title="Delete Task"><i data-lucide="trash" style="width: 18px;"></i></button>
+                            </div>
+                        </div>
+                        <div class="task-item">
+                            <div class="task-left">
+                                <div class="checkbox"></div>
+                                <span class="task-title">Solve Previous Year Questions</span>
+                                <span class="tag math">Mathematics</span>
+                            </div>
+                            <div class="task-right">
+                                <span class="task-time"><i data-lucide="clock" style="width: 14px;"></i> 2h</span>
+                                <span class="task-status status high">High</span>
+                                <button class="delete-task-btn" title="Delete Task"><i data-lucide="trash" style="width: 18px;"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="#" class="link-btn">View All Tasks →</a>
+                </div>
+
+                <div class="card">
+                    <div class="progress-header" style="position: relative;">
+                        <h2 class="card-title" style="margin: 0;"><i data-lucide="trending-up"></i> Study Progress</h2>
+                        <div class="time-dropdown-container">
+                            <button class="dropdown-btn" id="timeDropdownBtn">This Week <i data-lucide="chevron-down" style="width: 16px;"></i></button>
+                            <div id="timeDropdownMenu" style="display: none; position: absolute; right: 0; top: 100%; background: white; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); z-index: 10; min-width: 120px; overflow: hidden; margin-top: 5px;">
+                                <a href="#" class="time-opt" data-val="week" style="display: block; padding: 10px 15px; color: var(--text-main); text-decoration: none; font-size: 0.85rem; border-bottom: 1px solid #f3f4f6;">This Week</a>
+                                <a href="#" class="time-opt" data-val="month" style="display: block; padding: 10px 15px; color: var(--text-main); text-decoration: none; font-size: 0.85rem;">This Month</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="subjects-progress-list">
+                        <div class="sp-item math">
+                            <div class="sp-title"><i data-lucide="calculator"></i> Mathematics</div>
+                            <div class="sp-perc">70%</div>
+                            <div class="sp-bar-bg"><div class="sp-bar-fill" style="width: 70%;"></div></div>
+                        </div>
+                        <div class="sp-item phy">
+                            <div class="sp-title"><i data-lucide="atom"></i> Physics</div>
+                            <div class="sp-perc">50%</div>
+                            <div class="sp-bar-bg"><div class="sp-bar-fill" style="width: 50%;"></div></div>
+                        </div>
+                        <div class="sp-item chem">
+                            <div class="sp-title"><i data-lucide="flask-conical"></i> Chemistry</div>
+                            <div class="sp-perc">80%</div>
+                            <div class="sp-bar-bg"><div class="sp-bar-fill" style="width: 80%;"></div></div>
+                        </div>
+                        <div class="sp-item bio">
+                            <div class="sp-title"><i data-lucide="dna"></i> Biology</div>
+                            <div class="sp-perc">65%</div>
+                            <div class="sp-bar-bg"><div class="sp-bar-fill" style="width: 65%;"></div></div>
+                        </div>
+                        <div class="sp-item eco">
+                            <div class="sp-title"><i data-lucide="line-chart"></i> Economics</div>
+                            <div class="sp-perc">60%</div>
+                            <div class="sp-bar-bg"><div class="sp-bar-fill" style="width: 60%;"></div></div>
+                        </div>
+                        <div class="sp-item zoo">
+                            <div class="sp-title"><i data-lucide="bug"></i> Zoology</div>
+                            <div class="sp-perc">55%</div>
+                            <div class="sp-bar-bg"><div class="sp-bar-fill" style="width: 55%;"></div></div>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-area">
+                        <h4 class="chart-title"><i data-lucide="activity" style="width: 14px; display: inline-block; vertical-align: middle;"></i> Study Hours Overview</h4>
+                        <div class="chart-container">
+                            <div id="chartYLabels" style="position: absolute; left: 0; top: 0; bottom: 20px; display: flex; flex-direction: column; justify-content: space-between; font-size: 0.65rem; color: var(--text-muted);">
+                                <span>4h</span>
+                                <span>2h</span>
+                                <span>0h</span>
+                            </div>
+                            <svg style="position: absolute; top:0; left: 20px; width: calc(100% - 20px); height: calc(100% - 20px);">
+                                <line x1="0" y1="0%" x2="100%" y2="0%" stroke="#e5e7eb" stroke-width="1" />
+                                <line x1="0" y1="50%" x2="100%" y2="50%" stroke="#e5e7eb" stroke-width="1" />
+                                <line x1="0" y1="100%" x2="100%" y2="100%" stroke="#e5e7eb" stroke-width="1" />
+                            </svg>
+                            <svg viewBox="0 0 600 100" style="position: absolute; top:0; left: 20px; width: calc(100% - 20px); height: calc(100% - 20px);" preserveAspectRatio="none">
+                                <path id="progressChartPath" d="M0,80 L100,50 L200,80 L300,50 L400,70 L500,20 L600,70" fill="none" stroke="#7c3aed" stroke-width="2" />
+                                <g id="progressChartCircles">
+                                    <circle cx="0" cy="80" r="4" fill="#7c3aed" />
+                                    <circle cx="100" cy="50" r="4" fill="#7c3aed" />
+                                    <circle cx="200" cy="80" r="4" fill="#7c3aed" />
+                                    <circle cx="300" cy="50" r="4" fill="#7c3aed" />
+                                    <circle cx="400" cy="70" r="4" fill="#7c3aed" />
+                                    <circle cx="500" cy="20" r="4" fill="#7c3aed" />
+                                    <circle cx="600" cy="70" r="4" fill="#7c3aed" />
+                                </g>
+                            </svg>
+                            <div id="progressChartLabels" style="position: absolute; bottom: 0; left: 20px; width: calc(100% - 20px); display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--text-muted);">
+                                <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Right Sidebar -->
+            <aside class="sidebar-right">
+                <div class="card">
+                    <h2 class="card-title"><i data-lucide="users"></i> Recommended Study Partners</h2>
+                    <div class="partner-list">
+                        <!-- Mathematics -->
+                        <div class="partner-item">
+                            <div class="partner-info">
+                                <img src="https://ui-avatars.com/api/?name=Raju+Das&background=3b82f6&color=fff" class="partner-avatar" alt="Raju">
+                                <div class="partner-details">
+                                    <h4>Raju Das</h4>
+                                    <p>Mathematics</p>
+                                    <span class="level-pill pill-beg">Beginner</span>
+                                </div>
+                            </div>
+                            <div class="partner-actions">
+                                <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
+                                <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
+                            </div>
+                        </div>
+                        <div class="partner-item">
+                            <div class="partner-info">
+                                <img src="https://ui-avatars.com/api/?name=Anil+Kumar&background=1d4ed8&color=fff" class="partner-avatar" alt="Anil">
+                                <div class="partner-details">
+                                    <h4>Anil Kumar</h4>
+                                    <p>Mathematics</p>
+                                    <span class="level-pill pill-int">Intermediate</span>
+                                </div>
+                            </div>
+                            <div class="partner-actions">
+                                <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
+                                <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
+                            </div>
+                        </div>
+                        <div class="partner-item">
+                            <div class="partner-info">
+                                <img src="https://ui-avatars.com/api/?name=Vikram+Reddy&background=4338ca&color=fff" class="partner-avatar" alt="Vikram">
+                                <div class="partner-details">
+                                    <h4>Vikram Reddy</h4>
+                                    <p>Mathematics</p>
+                                    <span class="level-pill pill-pro">Pro</span>
+                                </div>
+                            </div>
+                            <div class="partner-actions">
+                                <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
+                                <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
+                            </div>
+                        </div>
+                        
+                        <!-- Physics -->
+                        <div class="partner-item">
+                            <div class="partner-info">
+                                <img src="https://ui-avatars.com/api/?name=Maya+Menon&background=059669&color=fff" class="partner-avatar" alt="Maya">
+                                <div class="partner-details">
+                                    <h4>Maya Menon</h4>
+                                    <p>Physics</p>
+                                    <span class="level-pill pill-beg">Beginner</span>
+                                </div>
+                            </div>
+                            <div class="partner-actions">
+                                <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
+                                <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
+                            </div>
+                        </div>
+                        <div class="partner-item">
+                            <div class="partner-info">
+                                <img src="https://ui-avatars.com/api/?name=Suresh+Babu&background=573b30&color=fff" class="partner-avatar" alt="Suresh">
+                                <div class="partner-details">
+                                    <h4>Suresh Babu</h4>
+                                    <p>Physics</p>
+                                    <span class="level-pill pill-int">Intermediate</span>
+                                </div>
+                            </div>
+                            <div class="partner-actions">
+                                <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
+                                <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
+                            </div>
+                        </div>
+                        <div class="partner-item">
+                            <div class="partner-info">
+                                <img src="https://ui-avatars.com/api/?name=Priya+Sharma&background=172061&color=fff" class="partner-avatar" alt="Priya">
+                                <div class="partner-details">
+                                    <h4>Priya Sharma</h4>
+                                    <p>Physics</p>
+                                    <span class="level-pill pill-pro">Pro</span>
+                                </div>
+                            </div>
+                            <div class="partner-actions">
+                                <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
+                                <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- Chemistry -->
+                        <div class="partner-item">
+                            <div class="partner-info">
+                                <img src="https://ui-avatars.com/api/?name=Kiran+Bose&background=ea580c&color=fff" class="partner-avatar" alt="Kiran">
+                                <div class="partner-details">
+                                    <h4>Kiran Bose</h4>
+                                    <p>Chemistry</p>
+                                    <span class="level-pill pill-beg">Beginner</span>
+                                </div>
+                            </div>
+                            <div class="partner-actions">
+                                <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
+                                <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
+                            </div>
+                        </div>
+                        <div class="partner-item">
+                            <div class="partner-info">
+                                <img src="https://ui-avatars.com/api/?name=Neha+Patil&background=c90300&color=fff" class="partner-avatar" alt="Neha">
+                                <div class="partner-details">
+                                    <h4>Neha Patil</h4>
+                                    <p>Chemistry</p>
+                                    <span class="level-pill pill-int">Intermediate</span>
+                                </div>
+                            </div>
+                            <div class="partner-actions">
+                                <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
+                                <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
+                            </div>
+                        </div>
+                        <div class="partner-item">
+                            <div class="partner-info">
+                                <img src="https://ui-avatars.com/api/?name=Rahul+Verma&background=dcf1fb&color=000" class="partner-avatar" alt="Rahul">
+                                <div class="partner-details">
+                                    <h4>Rahul Verma</h4>
+                                    <p>Chemistry</p>
+                                    <span class="level-pill pill-pro">Pro</span>
+                                </div>
+                            </div>
+                            <div class="partner-actions">
+                                <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
+                                <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- Biology -->
+                        <div class="partner-item">
+                            <div class="partner-info">
+                                <img src="https://ui-avatars.com/api/?name=Tina+Roy&background=e11d48&color=fff" class="partner-avatar" alt="Tina">
+                                <div class="partner-details">
+                                    <h4>Tina Roy</h4>
+                                    <p>Biology</p>
+                                    <span class="level-pill pill-beg">Beginner</span>
+                                </div>
+                            </div>
+                            <div class="partner-actions">
+                                <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
+                                <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
+                            </div>
+                        </div>
+                        <div class="partner-item">
+                            <div class="partner-info">
+                                <img src="https://ui-avatars.com/api/?name=Kavya+Nair&background=random" class="partner-avatar" alt="Kavya">
+                                <div class="partner-details">
+                                    <h4>Kavya Nair</h4>
+                                    <p>Biology</p>
+                                    <span class="level-pill pill-int">Intermediate</span>
+                                </div>
+                            </div>
+                            <div class="partner-actions">
+                                <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
+                                <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
+                            </div>
+                        </div>
+                        <div class="partner-item">
+                            <div class="partner-info">
+                                <img src="https://ui-avatars.com/api/?name=Amit+Singh&background=random" class="partner-avatar" alt="Amit">
+                                <div class="partner-details">
+                                    <h4>Amit Singh</h4>
+                                    <p>Biology</p>
+                                    <span class="level-pill pill-pro">Pro</span>
+                                </div>
+                            </div>
+                            <div class="partner-actions">
+                                <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
+                                <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- Economics -->
+                        <div class="partner-item">
+                            <div class="partner-info">
+                                <img src="https://ui-avatars.com/api/?name=Dev+Patel&background=0284c7&color=fff" class="partner-avatar" alt="Dev">
+                                <div class="partner-details">
+                                    <h4>Dev Patel</h4>
+                                    <p>Economics</p>
+                                    <span class="level-pill pill-beg">Beginner</span>
+                                </div>
+                            </div>
+                            <div class="partner-actions">
+                                <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
+                                <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
+                            </div>
+                        </div>
+                        <div class="partner-item">
+                            <div class="partner-info">
+                                <img src="https://ui-avatars.com/api/?name=Sneha+Rao&background=random" class="partner-avatar" alt="Sneha">
+                                <div class="partner-details">
+                                    <h4>Sneha Rao</h4>
+                                    <p>Economics</p>
+                                    <span class="level-pill pill-int">Intermediate</span>
+                                </div>
+                            </div>
+                            <div class="partner-actions">
+                                <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
+                                <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
+                            </div>
+                        </div>
+                        <div class="partner-item">
+                            <div class="partner-info">
+                                <img src="https://ui-avatars.com/api/?name=Karan+Joshi&background=random" class="partner-avatar" alt="Karan">
+                                <div class="partner-details">
+                                    <h4>Karan Joshi</h4>
+                                    <p>Economics</p>
+                                    <span class="level-pill pill-pro">Pro</span>
+                                </div>
+                            </div>
+                            <div class="partner-actions">
+                                <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
+                                <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- Zoology -->
+                        <div class="partner-item">
+                            <div class="partner-info">
+                                <img src="https://ui-avatars.com/api/?name=Sonia+Gupta&background=9333ea&color=fff" class="partner-avatar" alt="Sonia">
+                                <div class="partner-details">
+                                    <h4>Sonia Gupta</h4>
+                                    <p>Zoology</p>
+                                    <span class="level-pill pill-beg">Beginner</span>
+                                </div>
+                            </div>
+                            <div class="partner-actions">
+                                <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
+                                <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
+                            </div>
+                        </div>
+                        <div class="partner-item">
+                            <div class="partner-info">
+                                <img src="https://ui-avatars.com/api/?name=Divya+Menon&background=random" class="partner-avatar" alt="Divya">
+                                <div class="partner-details">
+                                    <h4>Divya Menon</h4>
+                                    <p>Zoology</p>
+                                    <span class="level-pill pill-int">Intermediate</span>
+                                </div>
+                            </div>
+                            <div class="partner-actions">
+                                <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
+                                <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
+                            </div>
+                        </div>
+                        <div class="partner-item">
+                            <div class="partner-info">
+                                <img src="https://ui-avatars.com/api/?name=Arun+Das&background=random" class="partner-avatar" alt="Arun">
+                                <div class="partner-details">
+                                    <h4>Arun Das</h4>
+                                    <p>Zoology</p>
+                                    <span class="level-pill pill-pro">Pro</span>
+                                </div>
+                            </div>
+                            <div class="partner-actions">
+                                <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
+                                <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="#" class="link-btn">View All Partners →</a>
+                </div>
+
+                <div class="card">
+                    <div class="tasks-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+                        <h2 class="card-title" style="margin: 0; text-transform: uppercase; font-size: 0.9rem;"><i data-lucide="calendar"></i> Upcoming Schedule</h2>
+                        <button class="btn-primary" id="openAddScheduleBtn" style="padding: 5px 10px; font-size: 0.8rem;"><i data-lucide="plus" style="width: 14px;"></i> Add</button>
+                    </div>
+                    <div class="schedule-list">
+                        <div class="schedule-item">
+                            <div class="sched-icon math"><i data-lucide="calendar"></i></div>
+                            <div class="sched-details">
+                                <h4>Mathematics Discussion</h4>
+                                <p>Today, 6:00 PM</p>
+                            </div>
+                            <i data-lucide="trash-2" class="delete-schedule-btn" style="width: 16px; color: #ef4444; margin-left: auto; cursor: pointer;" title="Delete"></i>
+                        </div>
+                        <div class="schedule-item">
+                            <div class="sched-icon phy"><i data-lucide="calendar"></i></div>
+                            <div class="sched-details">
+                                <h4>Physics Doubt Session</h4>
+                                <p>Tomorrow, 5:00 PM</p>
+                            </div>
+                            <i data-lucide="trash-2" class="delete-schedule-btn" style="width: 16px; color: #ef4444; margin-left: auto; cursor: pointer;" title="Delete"></i>
+                        </div>
+                        <div class="schedule-item">
+                            <div class="sched-icon chem"><i data-lucide="calendar"></i></div>
+                            <div class="sched-details">
+                                <h4>Chemistry Revision</h4>
+                                <p>May 25, 2024 - 4:00 PM</p>
+                            </div>
+                            <i data-lucide="trash-2" class="delete-schedule-btn" style="width: 16px; color: #ef4444; margin-left: auto; cursor: pointer;" title="Delete"></i>
+                        </div>
+                        <div class="schedule-item">
+                            <div class="sched-icon bio"><i data-lucide="calendar"></i></div>
+                            <div class="sched-details">
+                                <h4>Biology Study Group</h4>
+                                <p>May 26, 2024 - 10:00 AM</p>
+                            </div>
+                            <i data-lucide="trash-2" class="delete-schedule-btn" style="width: 16px; color: #ef4444; margin-left: auto; cursor: pointer;" title="Delete"></i>
+                        </div>
+                        <div class="schedule-item">
+                            <div class="sched-icon eco"><i data-lucide="calendar"></i></div>
+                            <div class="sched-details">
+                                <h4>Economics Seminar</h4>
+                                <p>May 27, 2024 - 2:00 PM</p>
+                            </div>
+                            <i data-lucide="trash-2" class="delete-schedule-btn" style="width: 16px; color: #ef4444; margin-left: auto; cursor: pointer;" title="Delete"></i>
+                        </div>
+                        <div class="schedule-item">
+                            <div class="sched-icon zoo"><i data-lucide="calendar"></i></div>
+                            <div class="sched-details">
+                                <h4>Zoology Lab Prep</h4>
+                                <p>May 28, 2024 - 9:00 AM</p>
+                            </div>
+                            <i data-lucide="trash-2" class="delete-schedule-btn" style="width: 16px; color: #ef4444; margin-left: auto; cursor: pointer;" title="Delete"></i>
+                        </div>
+                    </div>
+                    <a href="#" class="link-btn">View Full Schedule →</a>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- Level Dropdown (Hidden by default) -->
+    <div id="levelDropdown">
+        <a href="#" class="level-subitem" data-level="Beginner">Beginner</a>
+        <a href="#" class="level-subitem" data-level="Intermediate">Intermediate</a>
+        <a href="#" class="level-subitem" data-level="Pro">Pro</a>
+    </div>
+
+    <!-- CSRF Token for AJAX -->
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
+    <!-- Discussion Server Modal -->
+    <div class="modal-overlay" id="discussionModal">
+        <div class="modal-content discussion-modal-content">
+            <div class="chat-header">
+                <button id="backFromDiscussionBtn" style="background: none; border: none; cursor: pointer; color: var(--text-muted); margin-right: 15px; display: flex; align-items: center; justify-content: center;" title="Go Back">
+                    <i data-lucide="arrow-left" style="width: 24px;"></i>
+                </button>
+                <div class="chat-profiles">
+                    <!-- My Profile -->
+                    <div class="chat-profile-item">
+                        <img src="https://ui-avatars.com/api/?name={{ user.first_name|default:'Manikanta' }}&background=6366f1&color=fff" alt="Me">
+                        <div class="chat-profile-info">
+                            <h4>You</h4>
+                            <p>Student</p>
+                        </div>
+                    </div>
+                    
+                    <div class="vs-badge"><i data-lucide="zap" style="width: 14px;"></i> Live</div>
+                    
+                    <!-- Partner Profile -->
+                    <div class="chat-profile-item" id="chatPartnerProfile">
+                        <img src="" id="chatPartnerImg" alt="Partner">
+                        <div class="chat-profile-info">
+                            <h4 id="chatPartnerName">Partner Name</h4>
+                            <p id="chatPartnerSubject">Subject</p>
+                        </div>
+                    </div>
+                </div>
+                <i data-lucide="x" class="close-modal" id="closeDiscussionModal"></i>
+            </div>
+            
+            <div class="chat-messages" id="chatMessagesArea">
+                <div class="chat-message msg-mine">
+                    <div class="msg-bubble">Hi! I have some doubts regarding today's topic. Can we discuss?</div>
+                    <span class="msg-time">Just now</span>
+                </div>
+                <div class="chat-message msg-theirs">
+                    <div class="msg-bubble">Hello! Yes, absolutely. I was just reviewing my notes. What specifically are you stuck on?</div>
+                    <span class="msg-time">Just now</span>
+                </div>
+                <div class="chat-message msg-mine">
+                    <div class="msg-bubble">I'm struggling with the advanced concepts we covered. Here are my notes from the session.</div>
+                    <div class="msg-attachment" onclick="alert('Downloading My_Study_Notes.pdf...')">
+                        <i data-lucide="file-text" style="width: 16px; color: var(--primary);"></i>
+                        <span>My_Study_Notes.pdf</span>
+                        <i data-lucide="download" style="width: 14px; margin-left: auto;"></i>
+                    </div>
+                    <span class="msg-time">Just now</span>
+                </div>
+            </div>
+            
+            <div class="chat-input-area">
+                <input type="file" id="chatFileInput" style="display:none;">
+                <button class="chat-action-btn chat-attach" title="Attach File"><i data-lucide="paperclip" style="width: 20px;"></i></button>
+                <button class="chat-action-btn chat-attach chat-photo" title="Send Photo"><i data-lucide="image" style="width: 20px;"></i></button>
+                <button class="chat-action-btn chat-attach chat-mic" title="Voice Message"><i data-lucide="mic" style="width: 20px;"></i></button>
+                <input type="text" placeholder="Type your message or share doubts..." id="chatInput">
+                <button class="chat-action-btn chat-send"><i data-lucide="send" style="width: 18px;"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Schedule Modal -->
+    <div class="modal-overlay" id="addScheduleModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Upcoming Schedule</h3>
+                <i data-lucide="x" class="close-modal" id="closeScheduleModal"></i>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="scheduleTitle">Schedule Title</label>
+                    <input type="text" id="scheduleTitle" placeholder="e.g., Mathematics Discussion">
+                </div>
+                <div class="form-group">
+                    <label for="scheduleSubject">Subject</label>
+                    <select id="scheduleSubject">
+                        <option value="math">Mathematics</option>
+                        <option value="phy">Physics</option>
+                        <option value="chem">Chemistry</option>
+                        <option value="bio">Biology</option>
+                        <option value="eco">Economics</option>
+                        <option value="zoo">Zoology</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="scheduleTime">Date & Time</label>
+                    <input type="text" id="scheduleTime" placeholder="e.g., Today, 6:00 PM">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelScheduleBtn">Cancel</button>
+                <button class="btn-primary" id="saveScheduleBtn">Save Schedule</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Task Modal -->
+    <div class="modal-overlay" id="addTaskModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Task</h3>
+                <i data-lucide="x" class="close-modal" id="closeTaskModal"></i>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="taskTitle">Task Title</label>
+                    <input type="text" id="taskTitle" placeholder="e.g., Read Chapter 4">
+                </div>
+                <div class="form-group">
+                    <label for="taskSubject">Subject</label>
+                    <select id="taskSubject">
+                        <option value="math">Mathematics</option>
+                        <option value="phy">Physics</option>
+                        <option value="chem">Chemistry</option>
+                        <option value="bio">Biology</option>
+                        <option value="eco">Economics</option>
+                        <option value="zoo">Zoology</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="taskPriority">Priority</label>
+                    <select id="taskPriority">
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="taskTime">Estimated Time (e.g., 1.5h)</label>
+                    <input type="text" id="taskTime" placeholder="1h">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelTaskBtn">Cancel</button>
+                <button class="btn-primary" id="saveTaskBtn">Save Task</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        const subjects = ['math', 'phy', 'chem', 'bio', 'eco', 'zoo'];
+        
+        let currentSubjectClass = null;
+        let currentSubjectName = null;
+
+        function resetNavItems() {
+            document.querySelectorAll('.nav-item').forEach(nav => {
+                nav.classList.remove('active');
+            });
+            const dropdown = document.getElementById('levelDropdown');
+            dropdown.style.display = 'none';
+            // Also reset subitem active states
+            document.querySelectorAll('.level-subitem').forEach(sub => {
+                sub.classList.remove('active');
+            });
+        }
+
+        function applySubjectFilter(selectedSubjectClass, selectedSubjectName, selectedLevel = null) {
+            // Filter Tasks
+            document.querySelectorAll('.task-item').forEach(task => {
+                if (!selectedSubjectClass) {
+                    task.style.display = 'flex';
+                } else {
+                    const tag = task.querySelector('.tag');
+                    if (tag && tag.classList.contains(selectedSubjectClass)) {
+                        task.style.display = 'flex';
+                    } else {
+                        task.style.display = 'none';
+                    }
+                }
+            });
+
+            // Filter Schedule
+            document.querySelectorAll('.schedule-item').forEach(sched => {
+                if (!selectedSubjectClass) {
+                    sched.style.display = 'flex';
+                } else {
+                    const icon = sched.querySelector('.sched-icon');
+                    if (icon && icon.classList.contains(selectedSubjectClass)) {
+                        sched.style.display = 'flex';
+                    } else {
+                        sched.style.display = 'none';
+                    }
+                }
+            });
+
+            // Filter Partners
+            document.querySelectorAll('.partner-item').forEach(partner => {
+                if (!selectedSubjectClass) {
+                    partner.style.display = 'flex';
+                } else {
+                    const pTag = partner.querySelector('.partner-details p');
+                    const isCorrectSubject = (pTag && pTag.innerText.trim() === selectedSubjectName);
+                    
+                    if (isCorrectSubject) {
+                        if (selectedLevel) {
+                            let targetLevel = selectedLevel;
+                            if (selectedLevel === "Beginner") targetLevel = "Intermediate";
+                            else if (selectedLevel === "Intermediate") targetLevel = "Pro";
+                            
+                            // Filter by level too if a level is selected
+                            const levelPill = partner.querySelector('.level-pill');
+                            if (levelPill && levelPill.innerText.trim() === targetLevel) {
+                                partner.style.display = 'flex';
+                            } else {
+                                partner.style.display = 'none';
+                            }
+                        } else {
+                            partner.style.display = 'flex';
+                        }
+                    } else {
+                        partner.style.display = 'none';
+                    }
+                }
+            });
+
+            // Filter Study Progress
+            document.querySelectorAll('.sp-item').forEach(sp => {
+                if (!selectedSubjectClass) {
+                    sp.style.display = 'flex';
+                } else {
+                    if (sp.classList.contains(selectedSubjectClass)) {
+                        sp.style.display = 'flex';
+                    } else {
+                        sp.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        // Handle navigation item clicks
+        function attachNavItemListener(item) {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const isActive = this.classList.contains('active');
+                
+                if (isActive) {
+                    // Untoggle
+                    resetNavItems();
+                    applySubjectFilter(null, null);
+                    currentSubjectClass = null;
+                    currentSubjectName = null;
+                } else {
+                    resetNavItems();
+                    this.classList.add('active');
+                    
+                    // Extract subject class
+                    currentSubjectClass = null;
+                    subjects.forEach(subj => {
+                        if (this.classList.contains(subj)) currentSubjectClass = subj;
+                    });
+                    
+                    // Extract clean name
+                    currentSubjectName = this.innerText.trim();
+
+                    // Apply filter just for subject initially
+                    applySubjectFilter(currentSubjectClass, currentSubjectName);
+
+                    // Move dropdown after this item and show it
+                    const dropdown = document.getElementById('levelDropdown');
+                    this.after(dropdown);
+                    dropdown.style.display = 'flex';
+                }
+            });
+        }
+
+        document.querySelectorAll('.nav-item').forEach(item => {
+            if (item.id !== 'addSubjectBtn') {
+                attachNavItemListener(item);
+            }
+        });
+
+        // Handle level subitem clicks
+        document.querySelectorAll('.level-subitem').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                // Remove active from other subitems
+                document.querySelectorAll('.level-subitem').forEach(sub => sub.classList.remove('active'));
+                this.classList.add('active');
+
+                const level = this.getAttribute('data-level');
+                // Apply filtering with the new level
+                applySubjectFilter(currentSubjectClass, currentSubjectName, level);
+            });
+        });
+
+        // Update Tasks Completed count
+        function updateTasksCompleted(change) {
+            const statBoxes = document.querySelectorAll('.stat-box');
+            statBoxes.forEach(box => {
+                const p = box.querySelector('p');
+                if (p && p.innerText.includes('Tasks Completed')) {
+                    const h3 = box.querySelector('h3');
+                    let current = parseInt(h3.innerText);
+                    h3.innerText = current + change;
+                }
+            });
+        }
+
+        // Handle Task Checkbox Clicks
+        function bindCheckbox(checkbox) {
+            checkbox.addEventListener('click', function() {
+                const taskItem = this.closest('.task-item');
+                const title = taskItem.querySelector('.task-title');
+                const status = taskItem.querySelector('.task-status');
+                
+                const isChecked = this.classList.contains('checked');
+                
+                if (isChecked) {
+                    this.classList.remove('checked');
+                    this.innerHTML = '';
+                    title.style.textDecoration = 'none';
+                    title.style.opacity = '1';
+                    
+                    const originalStatus = taskItem.getAttribute('data-original-status') || 'Pending';
+                    const originalClass = taskItem.getAttribute('data-original-class') || 'medium';
+                    status.innerText = originalStatus;
+                    status.className = 'task-status status ' + originalClass;
+                    
+                    updateTasksCompleted(-1);
+                } else {
+                    this.classList.add('checked');
+                    this.innerHTML = '<i data-lucide="check" style="width: 14px; color: white;"></i>';
+                    title.style.textDecoration = 'line-through';
+                    title.style.opacity = '0.6';
+                    
+                    if (!taskItem.hasAttribute('data-original-status')) {
+                        taskItem.setAttribute('data-original-status', status.innerText);
+                        let statusClass = 'medium';
+                        if (status.classList.contains('high')) statusClass = 'high';
+                        else if (status.classList.contains('low')) statusClass = 'low';
+                        taskItem.setAttribute('data-original-class', statusClass);
+                    }
+                    
+                    status.innerText = 'Completed';
+                    status.className = 'task-status status completed';
+                    
+                    updateTasksCompleted(1);
+                }
+                lucide.createIcons();
+            });
+        }
+
+        // Handle Delete Task Clicks
+        function bindDeleteBtn(deleteBtn) {
+            deleteBtn.addEventListener('click', function(e) {
+                // Prevent event bubbling if necessary
+                e.stopPropagation();
+                
+                const taskItem = this.closest('.task-item');
+                
+                // Check if it was completed to decrement counter
+                const checkbox = taskItem.querySelector('.checkbox');
+                if (checkbox && checkbox.classList.contains('checked')) {
+                    updateTasksCompleted(-1);
+                }
+                
+                // Remove from DOM
+                taskItem.remove();
+            });
+        }
+
+        // Bind existing checkboxes and delete buttons
+        document.querySelectorAll('.task-item .checkbox').forEach(bindCheckbox);
+        document.querySelectorAll('.task-item .delete-task-btn').forEach(bindDeleteBtn);
+
+        // Initialize visually for already checked items without modifying count
+        document.querySelectorAll('.task-item .checkbox.checked').forEach(checkbox => {
+            const taskItem = checkbox.closest('.task-item');
+            const title = taskItem.querySelector('.task-title');
+            title.style.textDecoration = 'line-through';
+            title.style.opacity = '0.6';
+            if (!taskItem.hasAttribute('data-original-status')) {
+                taskItem.setAttribute('data-original-status', 'Pending');
+                taskItem.setAttribute('data-original-class', 'medium');
+            }
+        });
+
+        // Add Task functionality
+        const addTaskBtn = document.querySelector('.tasks-header .btn-primary');
+        const addTaskModal = document.getElementById('addTaskModal');
+        const closeTaskModal = document.getElementById('closeTaskModal');
+        const cancelTaskBtn = document.getElementById('cancelTaskBtn');
+        const saveTaskBtn = document.getElementById('saveTaskBtn');
+
+        if (addTaskBtn) {
+            addTaskBtn.addEventListener('click', function() {
+                addTaskModal.style.display = 'flex';
+                document.getElementById('taskTitle').value = '';
+                document.getElementById('taskTime').value = '';
+            });
+        }
+
+        function hideModal() {
+            addTaskModal.style.display = 'none';
+        }
+
+        if (closeTaskModal) closeTaskModal.addEventListener('click', hideModal);
+        if (cancelTaskBtn) cancelTaskBtn.addEventListener('click', hideModal);
+
+        // Hide modal when clicking outside
+        window.addEventListener('click', function(e) {
+            if (e.target === addTaskModal) {
+                hideModal();
+            }
+        });
+
+        if (saveTaskBtn) {
+            saveTaskBtn.addEventListener('click', function() {
+                const title = document.getElementById('taskTitle').value;
+                const subjectVal = document.getElementById('taskSubject').value;
+                const subjectName = document.getElementById('taskSubject').options[document.getElementById('taskSubject').selectedIndex].text;
+                const priorityVal = document.getElementById('taskPriority').value;
+                const priorityText = document.getElementById('taskPriority').options[document.getElementById('taskPriority').selectedIndex].text;
+                const time = document.getElementById('taskTime').value || '1h';
+
+                if (title && title.trim() !== '') {
+                    const taskList = document.querySelector('.task-list');
+                    const newTask = document.createElement('div');
+                    newTask.className = 'task-item';
+                    
+                    newTask.innerHTML = `
+                        <div class="task-left">
+                            <div class="checkbox"></div>
+                            <span class="task-title">${title}</span>
+                            <span class="tag ${subjectVal}">${subjectName}</span>
+                        </div>
+                        <div class="task-right">
+                            <span class="task-time"><i data-lucide="clock" style="width: 14px;"></i> ${time}</span>
+                            <span class="task-status status ${priorityVal}">${priorityText}</span>
+                            <button class="delete-task-btn" title="Delete Task"><i data-lucide="trash" style="width: 18px;"></i></button>
+                        </div>
+                    `;
+                    taskList.appendChild(newTask);
+                    
+                    bindCheckbox(newTask.querySelector('.checkbox'));
+                    bindDeleteBtn(newTask.querySelector('.delete-task-btn'));
+                    lucide.createIcons();
+                    hideModal();
+                } else {
+                    alert("Please enter a task title.");
+                }
+            });
+        }
+        // Partner Action Functionalities
+        const discussionModal = document.getElementById('discussionModal');
+        const closeDiscussionModal = document.getElementById('closeDiscussionModal');
+        const chatPartnerName = document.getElementById('chatPartnerName');
+        const chatPartnerSubject = document.getElementById('chatPartnerSubject');
+        const chatPartnerImg = document.getElementById('chatPartnerImg');
+
+        const backFromDiscussionBtn = document.getElementById('backFromDiscussionBtn');
+
+        if (closeDiscussionModal) {
+            closeDiscussionModal.addEventListener('click', () => {
+                discussionModal.style.display = 'none';
+            });
+        }
+        
+        if (backFromDiscussionBtn) {
+            backFromDiscussionBtn.addEventListener('click', () => {
+                discussionModal.style.display = 'none';
+            });
+        }
+        
+        // Allow clicking outside the modal to close it (go back)
+        window.addEventListener('click', function(e) {
+            if (e.target === discussionModal) {
+                discussionModal.style.display = 'none';
+            }
+        });
+        let chatSocket = null;
+        let currentRoomId = null;
+
+        async function openChatModal(name, subject, level, imgUrl) {
+            chatPartnerName.innerText = name;
+            chatPartnerSubject.innerText = subject + ' • ' + level;
+            chatPartnerImg.src = imgUrl;
+            discussionModal.style.display = 'flex';
+            
+            chatMessagesArea.innerHTML = '<div style="text-align:center; color:var(--text-muted); font-size: 0.85rem; padding: 20px;">Finding real partner... connecting...</div>';
+            
+            // Fetch MatchRoom
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            try {
+                const response = await fetch('/api/match/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: JSON.stringify({
+                        subject: subject,
+                        level: level
+                    })
+                });
+                const data = await response.json();
+                if (data.room_id) {
+                    chatMessagesArea.innerHTML = `<div style="text-align:center; color:var(--primary); font-size: 0.85rem; padding: 20px;">Connected to ${data.partner}!</div>`;
+                    if (chatSocket) {
+                        chatSocket.close();
+                    }
+                    
+                    currentRoomId = data.room_id;
+                    
+                    const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
+                    chatSocket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/${data.room_id}/`);
+                    
+                    chatSocket.onmessage = function(e) {
+                        const data = JSON.parse(e.data);
+                        const msgDiv = document.createElement('div');
+                        const isMine = data.username === '{{ request.user.username }}';
+                        msgDiv.className = isMine ? 'chat-message msg-mine' : 'chat-message msg-theirs';
+                        
+                        let userLabel = isMine ? '' : `<div style="font-size: 0.65rem; color: var(--primary); margin-bottom: 4px; font-weight: bold;">${data.username}</div>`;
+                        
+                        let messageContent = data.message;
+                        if (messageContent.startsWith('<a href')) {
+                            // It's an HTML attachment link, let it render
+                        } else {
+                            messageContent = messageContent.replace(/\n/g, '<br>');
+                        }
+                        
+                        msgDiv.innerHTML = `
+                            <div class="msg-bubble">
+                                ${userLabel}
+                                ${messageContent}
+                            </div>
+                            <span class="msg-time">Just now</span>
+                        `;
+                        chatMessagesArea.appendChild(msgDiv);
+                        chatMessagesArea.scrollTop = chatMessagesArea.scrollHeight;
+                    };
+                    chatSocket.onclose = function(e) {
+                        console.error('Chat socket closed unexpectedly');
+                    };
+                } else if (data.error) {
+                    chatMessagesArea.innerHTML = `<div style="text-align:center; color:#ef4444; font-size: 0.85rem; padding: 20px;">${data.error}</div>`;
+                }
+            } catch (err) {
+                console.error("Matchmaking error", err);
+                chatMessagesArea.innerHTML = '<div style="text-align:center; color:#ef4444; font-size: 0.85rem; padding: 20px;">Failed to connect to matchmaking server.</div>';
+            }
+        }
+
+        function attachPartnerItemListener(partner) {
+            const msgBtn = partner.querySelector('.btn-icon-outline');
+            const addBtn = partner.querySelector('.btn-icon-fill');
+            const name = partner.querySelector('.partner-details h4').innerText;
+            const subject = partner.querySelector('.partner-details p').innerText;
+            const level = partner.querySelector('.partner-details .level-pill').innerText;
+            const imgUrl = partner.querySelector('.partner-avatar').src;
+
+            if (msgBtn) {
+                msgBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    openChatModal(name, subject, level, imgUrl);
+                });
+            }
+
+            if (addBtn) {
+                addBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const isAdded = this.classList.contains('added');
+                    if (isAdded) {
+                        this.classList.remove('added');
+                        this.style.background = 'var(--primary)';
+                        this.innerHTML = '<i data-lucide="plus" style="width: 16px;"></i>';
+                    } else {
+                        // Connect to partner
+                        this.classList.add('added');
+                        this.style.background = 'var(--status-completed)';
+                        this.innerHTML = '<i data-lucide="check" style="width: 16px;"></i>';
+                        lucide.createIcons();
+                        openChatModal(name, subject, level, imgUrl);
+                    }
+                });
+            }
+        }
+
+        document.querySelectorAll('.partner-item').forEach(partner => {
+            attachPartnerItemListener(partner);
+        });
+
+        // Add event listeners to Students Online connect buttons
+        document.querySelectorAll('.student-online-item').forEach(student => {
+            const connectBtn = student.querySelector('.btn-outline');
+            if (connectBtn) {
+                connectBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const name = student.querySelector('.so-details h4').innerText;
+                    const subject = student.querySelector('.so-details p:nth-child(2)').innerText;
+                    const levelRaw = student.querySelector('.so-details p:nth-child(3) span:nth-child(2)').innerText;
+                    const imgUrl = student.querySelector('.so-avatar').src;
+
+                    // Update UI button state
+                    if (this.innerText === 'Connect') {
+                        this.innerText = 'Connected';
+                        this.style.background = 'var(--status-completed)';
+                        this.style.color = 'white';
+                        this.style.borderColor = 'var(--status-completed)';
+                    }
+                    
+                    openChatModal(name, subject, levelRaw, imgUrl);
+                });
+            }
+        });
+
+        // Add Schedule functionality
+        const openAddScheduleBtn = document.getElementById('openAddScheduleBtn');
+        const addScheduleModal = document.getElementById('addScheduleModal');
+        const closeScheduleModal = document.getElementById('closeScheduleModal');
+        const cancelScheduleBtn = document.getElementById('cancelScheduleBtn');
+        const saveScheduleBtn = document.getElementById('saveScheduleBtn');
+
+        if (openAddScheduleBtn) {
+            openAddScheduleBtn.addEventListener('click', function() {
+                addScheduleModal.style.display = 'flex';
+                document.getElementById('scheduleTitle').value = '';
+                document.getElementById('scheduleTime').value = '';
+            });
+        }
+
+        function hideScheduleModal() {
+            addScheduleModal.style.display = 'none';
+        }
+
+        if (closeScheduleModal) closeScheduleModal.addEventListener('click', hideScheduleModal);
+        if (cancelScheduleBtn) cancelScheduleBtn.addEventListener('click', hideScheduleModal);
+
+        window.addEventListener('click', function(e) {
+            if (e.target === addScheduleModal) {
+                hideScheduleModal();
+            }
+        });
+
+        if (saveScheduleBtn) {
+            saveScheduleBtn.addEventListener('click', function() {
+                const title = document.getElementById('scheduleTitle').value;
+                const subjectVal = document.getElementById('scheduleSubject').value;
+                const time = document.getElementById('scheduleTime').value;
+
+                if (title && title.trim() !== '' && time && time.trim() !== '') {
+                    const scheduleList = document.querySelector('.schedule-list');
+                    const newSchedule = document.createElement('div');
+                    newSchedule.className = 'schedule-item';
+                    
+                    newSchedule.innerHTML = `
+                        <div class="sched-icon ${subjectVal}"><i data-lucide="calendar"></i></div>
+                        <div class="sched-details">
+                            <h4>${title}</h4>
+                            <p>${time}</p>
+                        </div>
+                        <i data-lucide="trash-2" class="delete-schedule-btn" style="width: 16px; color: #ef4444; margin-left: auto; cursor: pointer;" title="Delete"></i>
+                    `;
+                    scheduleList.appendChild(newSchedule);
+                    
+                    lucide.createIcons();
+                    hideScheduleModal();
+                } else {
+                    alert("Please enter both title and time.");
+                }
+            });
+        }
+
+        // Live Discussion Server Functionality
+        const chatInput = document.getElementById('chatInput');
+        const chatSendBtn = document.querySelector('.chat-send');
+        const chatMessagesArea = document.getElementById('chatMessagesArea');
+        const chatFileInput = document.getElementById('chatFileInput');
+        const chatAttachBtn = document.querySelector('.chat-action-btn.chat-attach:not(.chat-photo):not(.chat-mic)');
+        const chatPhotoBtn = document.querySelector('.chat-photo');
+        const chatMicBtn = document.querySelector('.chat-mic');
+
+        function sendChatMessage(text, isHtml = false) {
+            if (!text.trim()) return;
+            
+            if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
+                chatSocket.send(JSON.stringify({
+                    'message': text
+                }));
+                if (!isHtml) {
+                    chatInput.value = '';
+                }
+            } else {
+                alert("You are not connected to a chat room.");
+            }
+        }
+
+        if (chatSendBtn) {
+            chatSendBtn.addEventListener('click', () => sendChatMessage(chatInput.value));
+        }
+        if (chatInput) {
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendChatMessage(chatInput.value);
+            });
+        }
+
+        if (chatAttachBtn) {
+            chatAttachBtn.addEventListener('click', () => {
+                chatFileInput.accept = ".pdf,.doc,.docx,.txt";
+                chatFileInput.click();
+            });
+        }
+
+        if (chatPhotoBtn) {
+            chatPhotoBtn.addEventListener('click', () => {
+                chatFileInput.accept = "image/*";
+                chatFileInput.click();
+            });
+        }
+        
+        if (chatFileInput) {
+            chatFileInput.addEventListener('change', async function() {
+                if (this.files && this.files[0]) {
+                    const file = this.files[0];
+                    if (!currentRoomId) {
+                        alert("You must be connected to a room to upload files.");
+                        return;
+                    }
+                    
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('room_id', currentRoomId);
+                    
+                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                    
+                    try {
+                        const response = await fetch('/api/chat/upload/', {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': csrfToken
+                            },
+                            body: formData
+                        });
+                        
+                        const data = await response.json();
+                        if (data.success) {
+                            // Send the file link as a message through websocket
+                            let attachmentHtml = '';
+                            if (data.file_type === 'image') {
+                                attachmentHtml = `<img src="${data.file_url}" style="max-width:200px; border-radius:8px; display:block; margin-top:5px; cursor:pointer;" onclick="window.open('${data.file_url}', '_blank')">`;
+                            } else {
+                                attachmentHtml = `<div style="background:rgba(255,255,255,0.1); padding:8px; border-radius:6px; display:flex; align-items:center; gap:8px; margin-top:5px;">
+                                    <i data-lucide="file-text" style="width:16px;"></i>
+                                    <a href="${data.file_url}" target="_blank" style="color:inherit; text-decoration:underline;">${data.file_name}</a>
+                                </div>`;
+                            }
+                            sendChatMessage(attachmentHtml, true);
+                        } else {
+                            alert("Upload failed: " + data.error);
+                        }
+                    } catch (err) {
+                        console.error("Upload error:", err);
+                        alert("An error occurred during file upload.");
+                    }
+                    
+                    // Clear the input
+                    this.value = '';
+                }
+            });
+        }
+
+        let isRecording = false;
+        if (chatMicBtn) {
+            chatMicBtn.addEventListener('click', () => {
+                if (!isRecording) {
+                    isRecording = true;
+                    chatMicBtn.style.color = '#ef4444';
+                    chatMicBtn.innerHTML = '<i data-lucide="square" style="width: 20px;"></i>';
+                    chatInput.placeholder = "Recording audio... (Click stop to send)";
+                    chatInput.disabled = true;
+                    lucide.createIcons();
+                } else {
+                    isRecording = false;
+                    chatMicBtn.style.color = '';
+                    chatMicBtn.innerHTML = '<i data-lucide="mic" style="width: 20px;"></i>';
+                    chatInput.placeholder = "Type your message or share doubts...";
+                    chatInput.disabled = false;
+                    lucide.createIcons();
+                    
+                    // Send voice note attachment
+                    const attachmentHtml = `
+                        <div class="msg-attachment" style="cursor: pointer;" onclick="alert('Playing voice message...')">
+                            <i data-lucide="play" style="width: 16px; color: white;"></i>
+                            <span>Voice_Message.mp3 (0:04)</span>
+                        </div>
+                    `;
+                    sendChatMessage('', attachmentHtml);
+                }
+            });
+        }
+
+        if (chatFileInput) {
+            chatFileInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const file = this.files[0];
+                    const isImage = file.type.startsWith('image/');
+                    const iconType = isImage ? 'image' : 'file-text';
+                    
+                    const attachmentHtml = `
+                        <div class="msg-attachment" onclick="alert('Downloading ${file.name}...')">
+                            <i data-lucide="${iconType}" style="width: 16px; color: white;"></i>
+                            <span>${file.name}</span>
+                            <i data-lucide="download" style="width: 14px; margin-left: auto;"></i>
+                        </div>
+                    `;
+                    sendChatMessage('', attachmentHtml);
+                    
+                    // Reset input
+                    this.value = '';
+                }
+            });
+        }
+        const progressData = {
+            week: { math: 70, phy: 50, chem: 80, bio: 65, eco: 60, zoo: 55 },
+            month: { math: 85, phy: 65, chem: 92, bio: 78, eco: 74, zoo: 68 }
+        };
+
+        function updateSubjectProgress(timeframe) {
+            const data = progressData[timeframe];
+            if (!data) return;
+            for (const subject in data) {
+                const item = document.querySelector('.sp-item.' + subject);
+                if (item) {
+                    const percVal = data[subject];
+                    item.querySelector('.sp-perc').innerText = percVal + '%';
+                    item.querySelector('.sp-bar-fill').style.width = percVal + '%';
+                }
+            }
+        }
+
+        const timeDropdownBtn = document.getElementById('timeDropdownBtn');
+        const timeDropdownMenu = document.getElementById('timeDropdownMenu');
+        const chartPath = document.getElementById('progressChartPath');
+        const chartCircles = document.getElementById('progressChartCircles');
+        const chartLabels = document.getElementById('progressChartLabels');
+        const chartYLabels = document.getElementById('chartYLabels');
+
+        if (timeDropdownBtn && timeDropdownMenu) {
+            timeDropdownBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                timeDropdownMenu.style.display = timeDropdownMenu.style.display === 'none' ? 'block' : 'none';
+            });
+
+            document.querySelectorAll('.time-opt').forEach(opt => {
+                opt.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const val = this.getAttribute('data-val');
+                    const text = this.innerText;
+                    
+                    timeDropdownBtn.innerHTML = `${text} <i data-lucide="chevron-down" style="width: 16px;"></i>`;
+                    lucide.createIcons();
+                    timeDropdownMenu.style.display = 'none';
+
+                    updateSubjectProgress(val);
+
+                    if (val === 'month') {
+                        // Update to 4 weeks
+                        chartPath.setAttribute('d', 'M0,60 L200,30 L400,50 L600,20');
+                        chartCircles.innerHTML = `
+                            <circle cx="0" cy="60" r="4" fill="#7c3aed" />
+                            <circle cx="200" cy="30" r="4" fill="#7c3aed" />
+                            <circle cx="400" cy="50" r="4" fill="#7c3aed" />
+                            <circle cx="600" cy="20" r="4" fill="#7c3aed" />
+                        `;
+                        chartLabels.innerHTML = `
+                            <span>Week 1</span><span>Week 2</span><span>Week 3</span><span>Week 4</span>
+                        `;
+                        chartYLabels.innerHTML = `
+                            <span>40h</span>
+                            <span>20h</span>
+                            <span>0h</span>
+                        `;
+                    } else {
+                        // Update to 7 days
+                        chartPath.setAttribute('d', 'M0,80 L100,50 L200,80 L300,50 L400,70 L500,20 L600,70');
+                        chartCircles.innerHTML = `
+                            <circle cx="0" cy="80" r="4" fill="#7c3aed" />
+                            <circle cx="100" cy="50" r="4" fill="#7c3aed" />
+                            <circle cx="200" cy="80" r="4" fill="#7c3aed" />
+                            <circle cx="300" cy="50" r="4" fill="#7c3aed" />
+                            <circle cx="400" cy="70" r="4" fill="#7c3aed" />
+                            <circle cx="500" cy="20" r="4" fill="#7c3aed" />
+                            <circle cx="600" cy="70" r="4" fill="#7c3aed" />
+                        `;
+                        chartLabels.innerHTML = `
+                            <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+                        `;
+                        chartYLabels.innerHTML = `
+                            <span>4h</span>
+                            <span>2h</span>
+                            <span>0h</span>
+                        `;
+                    }
+                });
+            });
+
+            window.addEventListener('click', function() {
+                if (timeDropdownMenu.style.display === 'block') {
+                    timeDropdownMenu.style.display = 'none';
+                }
+            });
+        }
+
+        const viewAllBtn = document.getElementById('viewAllBtn');
+        if (viewAllBtn) {
+            viewAllBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const hiddenStudents = document.querySelectorAll('.hidden-student');
+                let isShowing = false;
+                hiddenStudents.forEach(student => {
+                    if (student.style.display === 'none' || student.style.display === '') {
+                        student.style.display = 'flex';
+                        isShowing = true;
+                    } else {
+                        student.style.display = 'none';
+                    }
+                });
+                
+                if (isShowing) {
+                    this.innerHTML = 'Show Less Online Students &uarr;';
+                } else {
+                    this.innerHTML = 'View All Online Students &rarr;';
+                }
+            });
+        }
+
+        const notificationBtn = document.getElementById('notificationBtn');
+        const notificationMenu = document.getElementById('notificationMenu');
+        
+        if (notificationBtn && notificationMenu) {
+            notificationBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                notificationMenu.style.display = notificationMenu.style.display === 'none' ? 'block' : 'none';
+            });
+            
+            window.addEventListener('click', function(e) {
+                if (notificationMenu.style.display === 'block' && !notificationMenu.contains(e.target)) {
+                    notificationMenu.style.display = 'none';
+                }
+            });
+        }
+
+        const addSubjectBtn = document.getElementById('addSubjectBtn');
+        const addSubjectForm = document.getElementById('addSubjectForm');
+        const newSubjectInput = document.getElementById('newSubjectInput');
+        const saveSubjectBtn = document.getElementById('saveSubjectBtn');
+        const cancelSubjectBtn = document.getElementById('cancelSubjectBtn');
+
+        if (addSubjectBtn && addSubjectForm) {
+            addSubjectBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                addSubjectBtn.style.display = 'none';
+                addSubjectForm.style.display = 'flex';
+                newSubjectInput.focus();
+            });
+
+            cancelSubjectBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                addSubjectForm.style.display = 'none';
+                addSubjectBtn.style.display = 'flex';
+                newSubjectInput.value = '';
+            });
+
+            saveSubjectBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const subjectName = newSubjectInput.value;
+                if (subjectName && subjectName.trim() !== '') {
+                    const cleanName = subjectName.trim();
+                    const navList = addSubjectBtn.parentElement;
+                    const newItem = document.createElement('a');
+                    newItem.href = '#';
+                    
+                    // Generate a unique subject class and add it to subjects array
+                    const newClass = 'subj-' + Date.now();
+                    subjects.push(newClass);
+                    newItem.className = 'nav-item ' + newClass;
+                    
+                    // Determine smart icon
+                    const lowerName = cleanName.toLowerCase();
+                    let iconName = 'book-open';
+                    if (lowerName.includes('java') || lowerName.includes('python') || lowerName.includes('c++') || lowerName.includes('code')) iconName = 'code';
+                    else if (lowerName.includes('data') || lowerName.includes('sql')) iconName = 'database';
+                    else if (lowerName.includes('web') || lowerName.includes('html')) iconName = 'globe';
+                    else if (lowerName.includes('art') || lowerName.includes('design')) iconName = 'palette';
+                    else if (lowerName.includes('history') || lowerName.includes('time')) iconName = 'hourglass';
+                    else if (lowerName.includes('music')) iconName = 'music';
+                    else if (lowerName.includes('math') || lowerName.includes('calc')) iconName = 'calculator';
+                    else if (lowerName.includes('sci') || lowerName.includes('phy')) iconName = 'atom';
+                    else if (lowerName.includes('chem')) iconName = 'flask-conical';
+                    else if (lowerName.includes('bio')) iconName = 'dna';
+                    
+                    newItem.innerHTML = `
+                        <div class="nav-icon" style="background: #e0e7ff; color: var(--primary); display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; margin-right: 12px;"><i data-lucide="${iconName}" style="width: 18px;"></i></div>
+                        ${cleanName}
+                        <i data-lucide="trash-2" class="delete-subject-btn" style="width: 16px; color: #ef4444; margin-left: auto; z-index: 2;" title="Delete"></i>
+                    `;
+                    // Insert before the form/button
+                    navList.insertBefore(newItem, addSubjectBtn);
+                    
+                    // Generate dummy study partners for this new subject
+                    const partnersList = document.querySelector('.partner-list');
+                    if (partnersList) {
+                        const allNames = ["Alex Costa", "Sarah Lee", "David Kim", "John Doe", "Jane Smith", "Emily Chen", "Michael Johnson", "Chris Evans", "Anna Bella", "Rohit Sharma", "Priya K"];
+                        const allLevels = [
+                            { level: "Beginner", levelClass: "pill-beg" },
+                            { level: "Intermediate", levelClass: "pill-int" },
+                            { level: "Pro", levelClass: "pill-pro" }
+                        ];
+                        
+                        const numPartners = Math.floor(Math.random() * 4) + 3; // 3 to 6 partners
+                        const dummyNames = [];
+                        for(let i=0; i<numPartners; i++) {
+                            const randName = allNames[Math.floor(Math.random() * allNames.length)];
+                            const randLevel = allLevels[Math.floor(Math.random() * allLevels.length)];
+                            dummyNames.push({ name: randName + (i>0?" "+i:""), level: randLevel.level, levelClass: randLevel.levelClass });
+                        }
+                        
+                        dummyNames.forEach(dummy => {
+                            const newPartner = document.createElement('div');
+                            newPartner.className = 'partner-item';
+                            newPartner.style.display = 'none'; // Hidden initially
+                            newPartner.innerHTML = `
+                                <div class="partner-info">
+                                    <img src="https://ui-avatars.com/api/?name=${dummy.name.replace(' ', '+')}&background=random" class="partner-avatar" alt="${dummy.name}">
+                                    <div class="partner-details">
+                                        <h4>${dummy.name}</h4>
+                                        <p>${subjectName.trim()}</p>
+                                        <span class="level-pill ${dummy.levelClass}">${dummy.level}</span>
+                                    </div>
+                                </div>
+                                <div class="partner-actions">
+                                    <button class="btn-icon-outline"><i data-lucide="message-square" style="width: 16px;"></i></button>
+                                    <button class="btn-icon-fill"><i data-lucide="plus" style="width: 16px;"></i></button>
+                                </div>
+                            `;
+                            partnersList.appendChild(newPartner);
+                            attachPartnerItemListener(newPartner);
+                        });
+                    }
+
+                    lucide.createIcons();
+                    attachNavItemListener(newItem);
+                    
+                    // Reset
+                    addSubjectForm.style.display = 'none';
+                    addSubjectBtn.style.display = 'flex';
+                    newSubjectInput.value = '';
+                }
+            });
+            
+            newSubjectInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    saveSubjectBtn.click();
+                }
+            });
+            
+            // Delete subject logic
+            document.addEventListener('click', function(e) {
+                const deleteSubjectBtn = e.target.closest('.delete-subject-btn');
+                if (deleteSubjectBtn) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const navItem = deleteSubjectBtn.closest('.nav-item');
+                    if (navItem) {
+                        const isActive = navItem.classList.contains('active');
+                        // if it was active, reset things
+                        if (isActive) {
+                            resetNavItems();
+                            applySubjectFilter(null, null);
+                            currentSubjectClass = null;
+                            currentSubjectName = null;
+                        }
+                        navItem.remove();
+                    }
+                }
+
+                // Delete schedule logic
+                const deleteScheduleBtn = e.target.closest('.delete-schedule-btn');
+                if (deleteScheduleBtn) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const scheduleItem = deleteScheduleBtn.closest('.schedule-item');
+                    if (scheduleItem) {
+                        scheduleItem.remove();
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

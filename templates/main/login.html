@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Study Partner</title>
+    {% load static %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        :root {
+            --brand-purple: #8b5cf6;
+            --brand-blue: #3b82f6;
+            --brand-gradient: linear-gradient(135deg, #a855f7, #3b82f6);
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        .login-wrapper {
+            display: flex;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        /* Left Side Panel */
+        .info-panel {
+            flex: 1.2;
+            background: var(--brand-gradient);
+            padding: 60px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            font-size: 2.5rem;
+        }
+
+        .logo-text h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8rem;
+            margin: 0;
+        }
+
+        .logo-text p {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            margin: 0;
+        }
+
+        .hero-text {
+            margin-top: 40px;
+            max-width: 450px;
+            z-index: 2;
+        }
+
+        .hero-text h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3rem;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        .hero-text p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        .illustration-area {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 600px;
+            z-index: 1;
+        }
+
+        .illustration-area img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Right Side Login Card */
+        .form-panel {
+            flex: 1;
+            background: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .login-card {
+            background: white;
+            width: 100%;
+            max-width: 480px;
+            padding: 50px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .profile-icon {
+            width: 70px;
+            height: 70px;
+            background: #ede9fe;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: var(--brand-purple);
+            font-size: 1.8rem;
+        }
+
+        .login-card h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8rem;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .login-card p.subtitle {
+            color: #6b7280;
+            font-size: 0.95rem;
+            margin-bottom: 35px;
+        }
+
+        .form-group {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i.field-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 14px 15px 14px 45px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: var(--brand-blue);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .input-wrapper i.toggle-pass {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            cursor: pointer;
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            font-size: 0.85rem;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #4b5563;
+            cursor: pointer;
+        }
+
+        .remember-me input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--brand-blue);
+        }
+
+        .forgot-pass {
+            color: var(--brand-blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--brand-gradient);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 30px 0;
+            color: #9ca3af;
+            font-size: 0.85rem;
+        }
+
+        .divider::before, .divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: #e5e7eb;
+        }
+
+        .social-logins {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 12px;
+            background: white;
+            color: #374151;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .social-btn:hover {
+            background: #f9fafb;
+        }
+
+        .social-btn img {
+            width: 20px;
+        }
+
+        .signup-footer {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .signup-footer a {
+            color: var(--brand-blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        @media (max-width: 992px) {
+            .info-panel {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-wrapper">
+        <!-- Left Panel -->
+        <div class="info-panel">
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div class="logo-text">
+                    <h2>Study Partner</h2>
+                    <p>Smart Student Collaboration System</p>
+                </div>
+            </div>
+
+            <div class="hero-text">
+                <h1>Learn Together, Grow Together</h1>
+                <p>Connect with study partners, share knowledge, track your goals, and achieve success together.</p>
+            </div>
+
+            <div class="illustration-area">
+                <!-- Using the generated illustration -->
+                <img src="{% static 'images/login_illustration.png' %}" alt="Students studying">
+            </div>
+        </div>
+
+        <!-- Right Panel -->
+        <div class="form-panel">
+            <div class="login-card">
+                <div class="profile-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h2>Welcome Back!</h2>
+                <p class="subtitle">Login to continue your learning journey</p>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div style="color: #ef4444; background: #fee2e2; padding: 10px; border-radius: 8px; margin-bottom: 20px; font-size: 0.85rem;">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-user field-icon"></i>
+                            <input type="text" id="username" name="username" placeholder="Enter your username" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-lock field-icon"></i>
+                            <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                            <i class="fas fa-eye toggle-pass"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-options">
+                        <label class="remember-me">
+                            <input type="checkbox" name="remember">
+                            Remember me
+                        </label>
+                        <a href="#" class="forgot-pass">Forgot Password?</a>
+                    </div>
+
+                    <button type="submit" class="login-btn" id="submitBtn">
+                        <i class="fas fa-lock"></i>
+                        <span id="btnText">Login</span>
+                    </button>
+                </form>
+
+                <div class="divider">or continue with</div>
+
+                <div class="social-logins">
+                    <button class="social-btn">
+                        <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" alt="Google">
+                        Google
+                    </button>
+                    <button class="social-btn">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft">
+                        Microsoft
+                    </button>
+                </div>
+
+                <div class="signup-footer">
+                    Don't have an account? <a href="{% url 'signup' %}">Sign up here</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle password visibility
+        const togglePass = document.querySelector('.toggle-pass');
+        const passwordField = document.querySelector('#password');
+        
+        togglePass.addEventListener('click', () => {
+            const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordField.setAttribute('type', type);
+            togglePass.classList.toggle('fa-eye');
+            togglePass.classList.toggle('fa-eye-slash');
+        });
+
+        // Loading state on submit
+        const loginForm = document.querySelector('form');
+        const submitBtn = document.querySelector('#submitBtn');
+        const btnText = document.querySelector('#btnText');
+        const lockIcon = submitBtn.querySelector('i');
+
+        loginForm.addEventListener('submit', () => {
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.7';
+            submitBtn.style.cursor = 'not-allowed';
+            btnText.innerText = 'Authenticating...';
+            lockIcon.className = 'fas fa-spinner fa-spin';
+        });
+    </script>
+</body>
+</html>
