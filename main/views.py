@@ -118,12 +118,37 @@ def dashboard_view(request):
     from itertools import chain
     recommended_partners_qs = list(chain(same_subject_profiles, other_profiles))[:12]
     
+    # Query all active matchmaking rooms for the logged-in user to populate the "Recent Conversations" panel
+    active_rooms = MatchRoom.objects.filter(
+        is_active=True
+    ).filter(
+        Q(student1=request.user) | Q(student2=request.user)
+    ).order_by('-created_at')
+
+    active_chats = []
+    for room in active_rooms:
+        partner_user = room.student2 if room.student1 == request.user else room.student1
+        last_message = room.messages.order_by('-timestamp').first()
+        
+        # Get partner's first selection level if available
+        first_sel = partner_user.profile.subject_selections.first()
+        level_display = first_sel.get_level_display() if first_sel else "Beginner"
+        
+        active_chats.append({
+            'room_id': room.id,
+            'partner': partner_user,
+            'subject': room.subject.name if room.subject else "General",
+            'level': level_display,
+            'last_message': last_message,
+        })
+
     context = {
         'subjects': subjects,
         'tasks': tasks,
         'peers': peers,
         'profile': profile,
         'recommended_partners': recommended_partners_qs,
+        'active_chats': active_chats,
     }
     return render(request, 'main/dashboard.html', context)
 
@@ -223,16 +248,17 @@ def find_partner_view(request):
                 print(f"[MATCHMAKING] No partner found for {request.user.username}")
                 return JsonResponse({'error': 'No study partner available right now'}, status=404)
                 
-            # 7. Check if THAT partner already has a room we should just join
-            partner_room = MatchRoom.objects.filter(
+            # 7. Check if there is an existing room specifically between request.user and partner
+            existing_room = MatchRoom.objects.filter(
                 is_active=True, subject=subject_obj
             ).filter(
-                Q(student1=partner) | Q(student2=partner)
+                Q(student1=request.user, student2=partner) |
+                Q(student1=partner, student2=request.user)
             ).first()
             
-            if partner_room:
-                print(f"[MATCHMAKING] {request.user.username} is joining partner's existing room {partner_room.id}")
-                return JsonResponse({'room_id': partner_room.id, 'partner': partner.username})
+            if existing_room:
+                print(f"[MATCHMAKING] {request.user.username} is joining existing room {existing_room.id} with {partner.username}")
+                return JsonResponse({'room_id': existing_room.id, 'partner': partner.username})
                 
             room = MatchRoom.objects.create(
                 student1=request.user,

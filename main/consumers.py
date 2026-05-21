@@ -9,6 +9,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.room_id = self.scope['url_route']['kwargs']['room_id']
         self.room_group_name = f'chat_{self.room_id}'
 
+        # Verify user is a participant of this room
+        is_participant = await self.check_participant()
+        if not is_participant:
+            await self.close()
+            return
+
         # Join room group
         await self.channel_layer.group_add(
             self.room_group_name,
@@ -76,6 +82,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 }
             )
 
+            # Send real-time notification to the other participant
+            participants = await self.get_room_participants_and_subject()
+            if participants:
+                other_username, subject_name = participants
+                await self.channel_layer.group_send(
+                    f"user_notifications_{other_username}",
+                    {
+                        'type': 'chat_notification',
+                        'room_id': self.room_id,
+                        'sender': username,
+                        'message': message,
+                        'subject': subject_name
+                    }
+                )
+
     # Receive message from room group
     async def chat_message(self, event):
         message = event['message']
@@ -135,4 +156,126 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def get_past_messages(self):
         room = MatchRoom.objects.get(id=self.room_id)
         return [{'id': m.id, 'text': m.text, 'username': m.sender.username} for m in room.messages.order_by('timestamp')[:50]]
+
+    @database_sync_to_async
+    def check_participant(self):
+        try:
+            room = MatchRoom.objects.get(id=self.room_id)
+            return self.scope["user"] == room.student1 or self.scope["user"] == room.student2
+        except Exception:
+            return False
+
+    @database_sync_to_async
+    def get_room_participants_and_subject(self):
+        try:
+            room = MatchRoom.objects.get(id=self.room_id)
+            other_user = room.student2 if room.student1 == self.scope["user"] else room.student1
+            subject_name = room.subject.name if room.subject else "General"
+            return other_user.username, subject_name
+        except Exception:
+            return None
+
+
+class NotificationConsumer(AsyncWebsocketConsumer):
+    # Class-level dictionary to track active socket connections per user across multiple tabs
+    active_users = {}  # { username: set(channel_name) }
+
+    async def connect(self):
+        self.user = self.scope.get('user')
+        if not self.user or not self.user.is_authenticated:
+            await self.close()
+            return
+
+        self.username = self.user.username
+        self.notification_group = f"user_notifications_{self.username}"
+        self.global_group = "global_notifications"
+
+        # Join personal notification group
+        await self.channel_layer.group_add(
+            self.notification_group,
+            self.channel_name
+        )
+
+        # Join global notifications group
+        await self.channel_layer.group_add(
+            self.global_group,
+            self.channel_name
+        )
+
+        await self.accept()
+
+        # Track connection in class-level dictionary
+        if self.username not in NotificationConsumer.active_users:
+            NotificationConsumer.active_users[self.username] = set()
+        
+        NotificationConsumer.active_users[self.username].add(self.channel_name)
+
+        # If this is the user's first active tab/connection, set online status and broadcast
+        if len(NotificationConsumer.active_users[self.username]) == 1:
+            await self.update_online_status(True)
+            await self.channel_layer.group_send(
+                self.global_group,
+                {
+                    'type': 'status_update',
+                    'username': self.username,
+                    'is_online': True
+                }
+            )
+
+    async def disconnect(self, close_code):
+        if hasattr(self, 'username'):
+            # Remove connection
+            if self.username in NotificationConsumer.active_users:
+                NotificationConsumer.active_users[self.username].discard(self.channel_name)
+                
+                # If no more active tabs/connections exist for this user, mark offline and broadcast
+                if len(NotificationConsumer.active_users[self.username]) == 0:
+                    NotificationConsumer.active_users.pop(self.username, None)
+                    await self.update_online_status(False)
+                    await self.channel_layer.group_send(
+                        self.global_group,
+                        {
+                            'type': 'status_update',
+                            'username': self.username,
+                            'is_online': False
+                        }
+                    )
+
+            # Leave groups
+            await self.channel_layer.group_discard(
+                self.notification_group,
+                self.channel_name
+            )
+            await self.channel_layer.group_discard(
+                self.global_group,
+                self.channel_name
+            )
+
+    async def chat_notification(self, event):
+        # Forward the notification message to the client WebSocket
+        await self.send(text_data=json.dumps({
+            'type': 'chat_notification',
+            'room_id': event['room_id'],
+            'sender': event['sender'],
+            'message': event['message'],
+            'subject': event['subject']
+        }))
+
+    async def status_update(self, event):
+        # Forward status change event to the client WebSocket
+        await self.send(text_data=json.dumps({
+            'type': 'status_update',
+            'username': event['username'],
+            'is_online': event['is_online']
+        }))
+
+    @database_sync_to_async
+    def update_online_status(self, is_online):
+        try:
+            profile = self.user.profile
+            profile.is_online = is_online
+            profile.save()
+        except Exception as e:
+            print(f"Error updating online status for {self.username}: {e}")
+
 
